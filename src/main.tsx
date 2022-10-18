@@ -13,9 +13,7 @@ import "prosemirror-image-plugin/dist/styles/sideResize.css";
 // )
 import { EditorState } from "prosemirror-state"
 import { EditorView } from "prosemirror-view"
-import { Schema, DOMParser, DOMSerializer } from "prosemirror-model"
-import { schema } from "prosemirror-schema-basic"
-import { addListNodes } from "prosemirror-schema-list"
+import { DOMParser } from "prosemirror-model"
 import { exampleSetup } from "prosemirror-example-setup"
 import { mySchema,initialDoc } from "./schema"
 import {CodeBlockView,arrowHandlers} from "./codemirror"
@@ -27,7 +25,6 @@ let content = document.querySelector("#content")!
 let view = new EditorView(editor, {
   state: EditorState.create({
     doc: mySchema.nodeFromJSON(initialDoc),
-    // DOMParser.fromSchema(mySchema).parse(content),
     plugins: [
       ...exampleSetup({ schema: mySchema }).concat(arrowHandlers),
       imagePlugin(mySchema, { ...defaultSettings }),

@@ -2,7 +2,7 @@
 import { Schema } from "prosemirror-model"
 import { schema } from "prosemirror-schema-basic"
 import { addListNodes } from "prosemirror-schema-list"
-import { defaultSettings, updateImageNode, imagePlugin } from "prosemirror-image-plugin"
+import { defaultSettings as imageSettings, updateImageNode, imagePlugin } from "prosemirror-image-plugin"
 import OrderedMap from "orderedmap";
 
  // Ugly hack for checking schema spec type..
@@ -43,10 +43,9 @@ content: [
 type: "doc",
 };
 
-
 // Mix the nodes from prosemirror-schema-list into the basic schema to
 // create a schema with list support.
-const imageSettings = {...defaultSettings};
+
 export const mySchema = new Schema({
   nodes: updateImageNode(schema.spec.nodes, {
     ...imageSettings,
@@ -54,9 +53,3 @@ export const mySchema = new Schema({
   marks: schema.spec.marks,
 });
 
-export const mySchema2 = new Schema({
-    nodes: updateImageNode(addListNodes(schema.spec.nodes, "paragraph block*", "block"), {
-      ...defaultSettings,
-    }),
-    marks: schema.spec.marks
-  });
