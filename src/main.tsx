@@ -5,6 +5,7 @@ import './index.css'
 import "prosemirror-image-plugin/dist/styles/common.css";
 import "prosemirror-image-plugin/dist/styles/withResize.css";
 import "prosemirror-image-plugin/dist/styles/sideResize.css";
+import {lintPlugin} from './lint'
 
 // ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 //   <React.StrictMode>
@@ -17,9 +18,9 @@ import { DOMParser } from "prosemirror-model"
 import { exampleSetup } from "prosemirror-example-setup"
 import { mySchema,initialDoc } from "./schema"
 import {CodeBlockView,arrowHandlers} from "./codemirror"
-import { defaultSettings, updateImageNode, imagePlugin } from "prosemirror-image-plugin"
+import { defaultSettings, imagePlugin } from "prosemirror-image-plugin"
 
-
+console.log(lintPlugin)ß
 let editor = document.querySelector("#editor")!
 let content = document.querySelector("#content")!
 let view = new EditorView(editor, {
@@ -28,6 +29,7 @@ let view = new EditorView(editor, {
     plugins: [
       ...exampleSetup({ schema: mySchema }).concat(arrowHandlers),
       imagePlugin(mySchema, { ...defaultSettings }),
+      lintPlugin
     ]
   }),
   nodeViews: {code_block: (node, view, getPos) => new CodeBlockView(node, view, getPos)}
