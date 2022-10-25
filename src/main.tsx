@@ -20,7 +20,7 @@ import { mySchema,initialDoc } from "./schema"
 import {CodeBlockView,arrowHandlers} from "./codemirror"
 import { defaultSettings, imagePlugin } from "prosemirror-image-plugin"
 
-console.log(lintPlugin)ß
+
 let editor = document.querySelector("#editor")!
 let content = document.querySelector("#content")!
 let view = new EditorView(editor, {

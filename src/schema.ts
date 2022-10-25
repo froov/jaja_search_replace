@@ -2,7 +2,7 @@
 import { Schema } from "prosemirror-model"
 import { schema } from "prosemirror-schema-basic"
 import { addListNodes } from "prosemirror-schema-list"
-import { defaultSettings as imageSettings, updateImageNode, imagePlugin } from "prosemirror-image-plugin"
+import { defaultSettings as imageSettings, updateImageNode } from "prosemirror-image-plugin"
 import OrderedMap from "orderedmap";
 
  // Ugly hack for checking schema spec type..
