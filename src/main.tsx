@@ -21,6 +21,7 @@ import { defaultSettings, updateImageNode, imagePlugin } from "prosemirror-image
 import {Decoration, DecorationSet} from "prosemirror-view"
 import {Plugin, TextSelection} from "prosemirror-state"
 import { Transaction , Command } from 'prosemirror-state'
+import { Transform } from 'prosemirror-transform'
 
 
 
@@ -55,9 +56,9 @@ const badWords = /\b(obviously|clearly|evidently|simply)\b/ig
 const badPunc = / ([,\.!?:]) ?/g
 
 function lint(doc: Node) {
-  let result: (any) []= [], lastHeadLevel: number|null = null
+  let result: { msg: string; from: number; to: number; fix: Function | null; }[]= [], lastHeadLevel: number|null = null
 
-  function record(msg: string, from: number, to: number, fix: Function|null) {
+  function record(msg: string, from: number, to: number, fix: number|null) {
     result.push({msg, from, to, fix})
   }
 
@@ -66,7 +67,6 @@ function lint(doc: Node) {
     if (node.isText) {
       // Scan text nodes for suspicious patterns
       let m
-      let text = node.text
       while (m = badWords.exec(node.text!))
         record(`Try not to say '${m[0]}'`,
                pos + m.index, pos + m.index + m[0].length, null)
@@ -84,7 +84,7 @@ function lint(doc: Node) {
       lastHeadLevel = level
     } else if (node.type.name == "image" && !node.attrs.alt) {
       // Ensure images have alt text
-      record("Image without alt text", pos, pos + 1, addAlt)
+      record("Image without alt text", pos, pos + 1, addAlt(pos))
     }
   })
 
@@ -93,7 +93,7 @@ function lint(doc: Node) {
 
 function fixPunc(replacement: string) {
   return function({state, dispatch}:{state:EditorState,dispatch:(tr: Transaction) => void}) {
-    dispatch(state.tr.replaceWith(this.from, this.to,
+    dispatch(state.tr.replaceWith(from, to,
                                   state.schema.text(replacement)))
   }
 }
@@ -104,16 +104,16 @@ function fixHeader(level: number) {
   }
 }
 
-function addAlt({state, dispatch}:{state:EditorState,dispatch:(tr: Transaction) => void}) {
+function addAlt(from: number, {state, dispatch}:{state:EditorState,dispatch:(tr: Transaction) => void}) {
   let alt = prompt("Alt text", "")
   if (alt) {
-    let attrs = Object.assign({}, state.doc.nodeAt(this.from).attrs, {alt})
-    dispatch(state.tr.setNodeMarkup(this.from, null, attrs))
+    let attrs = Object.assign({}, state.doc.nodeAt(from).attrs, {alt})
+    dispatch(state.tr.setNodeMarkup(from, null, attrs))
   }
 }
 
 function lintDeco(doc: Node) {
-  let decos: Decoration;
+  let decos: Decoration[]=[]
   lint(doc).forEach(prob => {
     decos.push(Decoration.inline(prob.from, prob.to, {class: "problem"}),
                Decoration.widget(prob.from, lintIcon(prob)))
@@ -121,7 +121,7 @@ function lintDeco(doc: Node) {
   return DecorationSet.create(doc, decos)
 }
 
-function lintIcon(prob) {
+function lintIcon(prob: { msg: any; from?: number; to?: number; fix?: Function | null; }) {
   let icon = document.createElement("div")
   icon.className = "lint-icon"
   icon.title = prob.msg
