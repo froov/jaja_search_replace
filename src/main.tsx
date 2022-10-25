@@ -20,6 +20,7 @@ import {CodeBlockView,arrowHandlers} from "./codemirror"
 import { defaultSettings, updateImageNode, imagePlugin } from "prosemirror-image-plugin"
 import {Decoration, DecorationSet} from "prosemirror-view"
 import {Plugin, TextSelection} from "prosemirror-state"
+import { Transaction , Command } from 'prosemirror-state'
 
 
 
@@ -54,9 +55,9 @@ const badWords = /\b(obviously|clearly|evidently|simply)\b/ig
 const badPunc = / ([,\.!?:]) ?/g
 
 function lint(doc: Node) {
-  let result: (String|Number|Function|null) []= [], lastHeadLevel: Number|null = null
+  let result: (any) []= [], lastHeadLevel: number|null = null
 
-  function record(msg: String, from: number, to: number, fix: Function|null) {
+  function record(msg: string, from: number, to: number, fix: Function|null) {
     result.push({msg, from, to, fix})
   }
 
@@ -90,20 +91,20 @@ function lint(doc: Node) {
   return result
 }
 
-function fixPunc(replacement) {
-  return function({state, dispatch}) {
+function fixPunc(replacement: string) {
+  return function({state, dispatch}:{state:EditorState,dispatch:(tr: Transaction) => void}) {
     dispatch(state.tr.replaceWith(this.from, this.to,
                                   state.schema.text(replacement)))
   }
 }
 
-function fixHeader(level) {
-  return function({state, dispatch}) {
+function fixHeader(level: number) {
+  return function({state, dispatch}:{state:EditorState,dispatch:(tr: Transaction) => void}) {
     dispatch(state.tr.setNodeMarkup(this.from - 1, null, {level}))
   }
 }
 
-function addAlt({state, dispatch}) {
+function addAlt({state, dispatch}:{state:EditorState,dispatch:(tr: Transaction) => void}) {
   let alt = prompt("Alt text", "")
   if (alt) {
     let attrs = Object.assign({}, state.doc.nodeAt(this.from).attrs, {alt})
@@ -111,8 +112,8 @@ function addAlt({state, dispatch}) {
   }
 }
 
-function lintDeco(doc) {
-  let decos = []
+function lintDeco(doc: Node) {
+  let decos: Decoration;
   lint(doc).forEach(prob => {
     decos.push(Decoration.inline(prob.from, prob.to, {class: "problem"}),
                Decoration.widget(prob.from, lintIcon(prob)))
@@ -136,8 +137,8 @@ let lintPlugin = new Plugin({
   props: {
     decorations(state) { return this.getState(state) },
     handleClick(view, _, event) {
-      if (/lint-icon/.test(event.target.className)) {
-        let {from, to} = event.target.problem
+      if (/lint-icon/.test(event.target!.className)) {
+        let {from, to} = event.target!.problem
         view.dispatch(
           view.state.tr
             .setSelection(TextSelection.create(view.state.doc, from, to))
@@ -146,8 +147,8 @@ let lintPlugin = new Plugin({
       }
     },
     handleDoubleClick(view, _, event) {
-      if (/lint-icon/.test(event.target.className)) {
-        let prob = event.target.problem
+      if (/lint-icon/.test(event.target!.className)) {
+        let prob = event.target!.problem
         if (prob.fix) {
           prob.fix(view)
           view.focus()
