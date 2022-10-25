@@ -8,7 +8,7 @@ interface Dispatch {
   }
   
   interface Problem extends HTMLElement {
-    ["data-problem"]: Result
+    ["data-problem"]?: Result 
   }
   // Words you probably shouldn't use
   const badWords = /\b(obviously|clearly|evidently|simply)\b/ig
@@ -88,7 +88,7 @@ interface Dispatch {
   }
   
   function lintIcon( prob: Result) {
-    let icon = document.createElement("div") as any as Problem
+    let icon = document.createElement("div") as Problem
     icon.className = "lint-icon"
     icon.title = prob.msg;
     icon["data-problem"] = prob
@@ -105,7 +105,7 @@ interface Dispatch {
       handleClick(view, _, event: MouseEvent) {
         const el = event.target as HTMLElement
         const result = (event.target as Problem)["data-problem"]
-        if (/lint-icon/.test(el.className)) {
+        if (result && /lint-icon/.test(el.className)) {
           let {from, to} = result
           view.dispatch(
             view.state.tr
@@ -117,7 +117,7 @@ interface Dispatch {
       handleDoubleClick(view, _, event) {
         const el = event.target as HTMLElement
         const result = (event.target as Problem)["data-problem"]
-        if (/lint-icon/.test(el.className)) {
+        if (result && /lint-icon/.test(el.className)) {
           let prob = result
           if (prob.fix) {
             prob.fix(view)
