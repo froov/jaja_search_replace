@@ -13,7 +13,7 @@ interface Dispatch {
   const badPunc = / ([,\.!?:]) ?/g
   
   interface Result {
-    msg: string, from: number, to: number, fix?: any
+    msg: string, from: number, to: number, fix?: (props: Dispatch)=>void
   }
   function lint(doc: Node) {
     let result: Result []= []
