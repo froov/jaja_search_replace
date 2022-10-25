@@ -7,6 +7,9 @@ interface Dispatch {
     dispatch: (e: Transaction) => void
   }
   
+  interface Problem extends HTMLElement {
+    ["data-problem"]: Result
+  }
   // Words you probably shouldn't use
   const badWords = /\b(obviously|clearly|evidently|simply)\b/ig
   // Matches punctuation with a space before it
@@ -25,7 +28,7 @@ interface Dispatch {
         // Scan text nodes for suspicious patterns
     
         let text = node.text
-        let m : any
+        let m : RegExpExecArray|null
         while ( m = badWords.exec(node.text!)) {
           const from = pos + m.index
           const to = pos + m.index + m[0].length
@@ -37,7 +40,7 @@ interface Dispatch {
           const to = pos + m.index + m[0].length
           const fix = ({state, dispatch}:Dispatch) => {
                   dispatch(state.tr.replaceWith(from, to,
-                                                state.schema.text(m[1] + " ")))}
+                                                state.schema.text(m![1] + " ")))}
           result.push({
             msg: "Suspicious spacing around punctuation",
             from, to, fix})
@@ -85,10 +88,10 @@ interface Dispatch {
   }
   
   function lintIcon( prob: Result) {
-    let icon = document.createElement("div")
+    let icon = document.createElement("div") as any as Problem
     icon.className = "lint-icon"
     icon.title = prob.msg;
-    (icon as any)["problem"] = prob
+    icon["data-problem"] = prob
     return icon
   }
   
@@ -101,7 +104,7 @@ interface Dispatch {
       decorations(state) { return this.getState(state) },
       handleClick(view, _, event: MouseEvent) {
         const el = event.target as HTMLElement
-        const result = (event.target as any)["problem"] as Result
+        const result = (event.target as Problem)["data-problem"]
         if (/lint-icon/.test(el.className)) {
           let {from, to} = result
           view.dispatch(
@@ -113,7 +116,7 @@ interface Dispatch {
       },
       handleDoubleClick(view, _, event) {
         const el = event.target as HTMLElement
-        const result = (event.target as any)["problem"] as Result
+        const result = (event.target as Problem)["data-problem"]
         if (/lint-icon/.test(el.className)) {
           let prob = result
           if (prob.fix) {
