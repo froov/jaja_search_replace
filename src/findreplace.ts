@@ -14,9 +14,9 @@ interface Dispatch {
   const badWords = /\b(obviously|clearly|evidently|simply)\b/ig
   // Matches punctuation with a space before it
   const badPunc = / ([,\.!?:]) ?/g
-  let search = document.querySelector('#search') as HTMLInputElement;
-  let searchs = document.getElementById('#search');
-  let searchString = searchs.value
+  const search = document.getElementById('search') as HTMLInputElement;
+  const searchs = search?.value
+  const searchString = new RegExp(searchs)
   
   interface Result {
     from: number, to: number, fix?: (props: Dispatch)=>void
@@ -31,7 +31,7 @@ interface Dispatch {
     
         let text = node.text
         let m : RegExpExecArray|null
-        while ( m = searchstring.exec(node.text!)) {
+        while ( m = searchString.exec(node.text!)) {
           const from = pos + m.index
           const to = pos + m.index + m[0].length
           result.push({from,to})        
