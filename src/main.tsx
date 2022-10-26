@@ -6,6 +6,7 @@ import "prosemirror-image-plugin/dist/styles/common.css";
 import "prosemirror-image-plugin/dist/styles/withResize.css";
 import "prosemirror-image-plugin/dist/styles/sideResize.css";
 import {lintPlugin} from './lint'
+import {searchReplacePlugin} from './findreplace'
 
 // ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 //   <React.StrictMode>
@@ -29,12 +30,14 @@ let view = new EditorView(editor, {
     plugins: [
       ...exampleSetup({ schema: mySchema }).concat(arrowHandlers),
       imagePlugin(mySchema, { ...defaultSettings }),
-      lintPlugin
+      lintPlugin,
+      searchReplacePlugin
     ]
   }),
   nodeViews: {code_block: (node, view, getPos) => new CodeBlockView(node, view, getPos)}
 })
 
+/*
 let search = document.querySelector('#search') as HTMLInputElement;
 let replace = document.querySelector('#replace') as HTMLInputElement;
 document.getElementById('go')?.addEventListener('click', () => {
@@ -45,7 +48,7 @@ document.getElementById('go')?.addEventListener('click', () => {
     plugins: exampleSetup({ schema: mySchema })
   }))
 })
-
+*/
 /*
 // Words you probably shouldn't use
 const badWords = /\b(obviously|clearly|evidently|simply)\b/ig
