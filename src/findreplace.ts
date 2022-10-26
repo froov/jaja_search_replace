@@ -17,6 +17,9 @@ interface Dispatch {
   const search = document.getElementById('search') as HTMLInputElement;
   const searchs = search?.value
   const searchString = new RegExp(searchs)
+
+  const replace = document.getElementById('replace') as HTMLInputElement;
+  const replaceString = replace?.value
   
   interface Result {
     from: number, to: number, fix?: (props: Dispatch)=>void
@@ -33,49 +36,14 @@ interface Dispatch {
         let m : RegExpExecArray|null
         while ( m = searchString.exec(node.text!)) {
           const from = pos + m.index
-          const to = pos + m.index + m[0].length
-          result.push({from,to})        
-        }
-  
-        while (m = badPunc.exec(node.text!)) {
-          const from = pos + m.index
-          const to = pos + m.index + m[0].length
+          const to = pos + m.index + m[0].length 
           const fix = ({state, dispatch}:Dispatch) => {
-                  dispatch(state.tr.replaceWith(from, to,
-                                                state.schema.text(m![1] + " ")))}
-          result.push({
-            msg: "Suspicious spacing around punctuation",
-            from, to, fix})
-          }
-      } else if (node.type.name == "heading") {
-        // Check whether heading levels fit under the current level
-        let level = node.attrs.level
-        if (lastHeadLevel != null && level > lastHeadLevel + 1) {
-          const from=pos + 1
-          const to= pos + 1 + node.content.size
-    
-        const fix = ({state, dispatch}:Dispatch) => {
-          dispatch(state.tr.setNodeMarkup(from - 1, null, {level:lastHeadLevel! + 1}))
+            dispatch(state.tr.replaceWith(from, to,
+                                          state.schema.text(replaceString)))}    
+            result.push({from, to, fix})
+             }
         }
-          result.push({ msg: `Heading too small (${level} under ${lastHeadLevel})`, from,to,fix})
-          }
-        
-        lastHeadLevel = level
-      } else if (node.type.name == "image" && !node.attrs.alt) {
-        // Ensure images have alt text
-        const from = pos
-        const to = pos+1
-        let alt = prompt("Alt text", "")
-        const fix =   ({state,dispatch}:Dispatch) => {
-          if (alt) {
-            let attrs = Object.assign({}, state.doc.nodeAt(from)?.attrs, {alt})
-            dispatch(state.tr.setNodeMarkup(from, null, attrs))
-          }        
-        }
-        result.push({msg:"Image without alt text", from,to,fix})
-      }
-    })
-  
+      })
     return result
   }
   
@@ -92,7 +60,7 @@ interface Dispatch {
   function lintIcon( prob: Result) {
     let icon = document.createElement("div") as Problem
     icon.className = "lint-icon"
-    icon.title = prob.msg;
+    //icon.title = prob.msg;
     icon["data-problem"] = prob
     return icon
   }
