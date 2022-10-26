@@ -5,6 +5,7 @@ import './index.css'
 import "prosemirror-image-plugin/dist/styles/common.css";
 import "prosemirror-image-plugin/dist/styles/withResize.css";
 import "prosemirror-image-plugin/dist/styles/sideResize.css";
+import {lintPlugin} from './lint'
 
 // ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 //   <React.StrictMode>
@@ -17,12 +18,7 @@ import { DOMParser, Fragment, Node, NodeType } from "prosemirror-model"
 import { exampleSetup } from "prosemirror-example-setup"
 import { mySchema,initialDoc } from "./schema"
 import {CodeBlockView,arrowHandlers} from "./codemirror"
-import { defaultSettings, updateImageNode, imagePlugin } from "prosemirror-image-plugin"
-import {Decoration, DecorationSet} from "prosemirror-view"
-import {Plugin, TextSelection} from "prosemirror-state"
-import { Transaction , Command } from 'prosemirror-state'
-import { Transform } from 'prosemirror-transform'
-
+import { defaultSettings, imagePlugin } from "prosemirror-image-plugin"
 
 
 let editor = document.querySelector("#editor")!
@@ -33,6 +29,7 @@ let view = new EditorView(editor, {
     plugins: [
       ...exampleSetup({ schema: mySchema }).concat(arrowHandlers),
       imagePlugin(mySchema, { ...defaultSettings }),
+      lintPlugin
     ]
   }),
   nodeViews: {code_block: (node, view, getPos) => new CodeBlockView(node, view, getPos)}
@@ -49,7 +46,7 @@ document.getElementById('go')?.addEventListener('click', () => {
   }))
 })
 
-
+/*
 // Words you probably shouldn't use
 const badWords = /\b(obviously|clearly|evidently|simply)\b/ig
 // Matches punctuation with a space before it
@@ -158,3 +155,4 @@ let lintPlugin = new Plugin({
     }
   }
 })
+*/
