@@ -14,16 +14,31 @@ interface Dispatch {
   //const badWords = /\b(obviously|clearly|evidently|simply)\b/ig
   // Matches punctuation with a space before it
   //const badPunc = / ([,\.!?:]) ?/g
-  const search = document.getElementById('search') as HTMLInputElement;
-  const searchs = search?.value
-  const searchString = new RegExp(searchs)
+  const search = document.querySelector('#search') as HTMLInputElement;
+  let replace = document.querySelector('#replace') as HTMLInputElement;
+  let searchs: string
+
+  search?.addEventListener('change', () => {
+    let searchinput = document.getElementById('search') as HTMLInputElement;
+    var searchs = searchinput?.value
+  })
+
+  /*
+  search!.addEventListener('change', updateSearch);
+  function updateSearch(s){
+    const searchs = s?.value
+    return searchs
+  }
+  //const searchs = ''
+  //const searchString = new RegExp(searchs)
 
   const replace = document.getElementById('replace') as HTMLInputElement;
   const replaceString = replace?.value
-  
+ */ 
   interface Result {
     from: number, to: number, fix?: (props: Dispatch)=>void
   }
+  /*
   function searchreplace(doc: Node) {
     let result: Result []= []
   
@@ -48,7 +63,31 @@ interface Dispatch {
     })
     return result
   }
+  */
+
+  function searchreplace(doc: Node) : Result[] {
+    let result: Result[] = []
+    if (!searchs) return result
+    // For each node in the document
+    doc.descendants((node: Node, pos: number, parent: Node | null) => {
+      if (node.isText) {
+        let text = node.text!
+        let index = 0
+        while (index!=-1) {
+          index = text.indexOf(searchs,index)
+          if (index != -1) {
+            const from = pos + index
+            const to = pos + index + searchs.length
+            result.push({ from, to })
+            console.log(from,to, node.text)
+            index += searchs.length
+          }
+        }
+      }
+    })
   
+    return result
+  }
   
   function searchDeco(doc: Node) {
     let decos : Decoration[] = []
@@ -67,7 +106,7 @@ interface Dispatch {
     return icon
   }
   
-  export  const searchReplacePlugin = new Plugin({
+  export  const searchReplacePlugin2 = new Plugin({
     state: {
       init(_, {doc}) { return searchDeco(doc) },
       apply(tr, old) { return tr.docChanged ? searchDeco(tr.doc) : old }

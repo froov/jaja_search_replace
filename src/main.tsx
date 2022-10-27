@@ -20,6 +20,7 @@ import { exampleSetup } from "prosemirror-example-setup"
 import { mySchema,initialDoc } from "./schema"
 import {CodeBlockView,arrowHandlers} from "./codemirror"
 import { defaultSettings, imagePlugin } from "prosemirror-image-plugin"
+import { searchReplacePlugin2 } from './findreplace copy';
 
 
 let editor = document.querySelector("#editor")!
@@ -31,15 +32,16 @@ let view = new EditorView(editor, {
       ...exampleSetup({ schema: mySchema }).concat(arrowHandlers),
       imagePlugin(mySchema, { ...defaultSettings }),
       lintPlugin,
-      searchReplacePlugin
+      searchReplacePlugin2
     ]
   }),
   nodeViews: {code_block: (node, view, getPos) => new CodeBlockView(node, view, getPos)}
 })
 
-/*
+
 let search = document.querySelector('#search') as HTMLInputElement;
 let replace = document.querySelector('#replace') as HTMLInputElement;
+/*
 document.getElementById('go')?.addEventListener('click', () => {
   let s = editor.querySelector(".ProseMirror")!.innerHTML
   content.innerHTML = s.replaceAll(search.value, replace.value)

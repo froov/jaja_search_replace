@@ -27,7 +27,7 @@ interface Dispatch {
       if (node.isText) {
         // Scan text nodes for suspicious patterns
     
-        let text = node.text
+        //let text = node.text
         let m : RegExpExecArray|null
         while ( m = badWords.exec(node.text!)) {
           const from = pos + m.index
