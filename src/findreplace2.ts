@@ -1,6 +1,7 @@
 import { EditorState,Transaction, Plugin, TextSelection} from "prosemirror-state"
-import {Decoration, DecorationSet} from "prosemirror-view"
+import {Decoration, DecorationSet, EditorView} from "prosemirror-view"
 import { Node } from "prosemirror-model"
+
 
 interface Dispatch {
     state: EditorState,
@@ -10,12 +11,16 @@ interface Dispatch {
   interface Problem extends HTMLElement {
     ["data-problem"]?: Result 
   }
-  // Words you probably shouldn't use
-  //const badWords = /\b(obviously|clearly|evidently|simply)\b/ig
-  // Matches punctuation with a space before it
-  //const badPunc = / ([,\.!?:]) ?/g
-  const search = document.getElementById('search') as HTMLInputElement;
-  const searchs = search?.value
+
+  var search : HTMLInputElement;
+  var searchs: string;
+  
+  document.querySelector('#search')?.addEventListener('change', ()=> {  
+    search = document.getElementById('search') as HTMLInputElement;
+    searchs = search?.value
+    return searchs
+  });
+
   //const searchString = new RegExp(searchs)
 
   const replace = document.getElementById('replace') as HTMLInputElement;
@@ -24,32 +29,6 @@ interface Dispatch {
   interface Result {
     from: number, to: number, fix?: (props: Dispatch)=>void
   }
-  /*
-  function searchreplace(doc: Node) {
-    let result: Result []= []
-  
-    // For each node in the document
-    doc.descendants((node: Node, pos: number, parent: Node|null ) => {
-      if (node.isText) {
-        // Scan text nodes for searched word
-    
-        //let text = node.text
-        let m : RegExpExecArray|null;
-        for (let index in (m = searchString.exec(node.text!))) {
-          console.log(m)
-          const from = pos + m.index
-          const to = pos + m.index + m[0].length 
-          const fix = ({state, dispatch}:Dispatch) => {
-            dispatch(state.tr.replaceWith(from, to,
-                                          state.schema.text(replaceString)))}    
-            result.push({from, to, fix})
-            break;
-        }
-      }
-    })
-    return result
-  }
-  */
 
   function searchreplace(doc: Node) : Result[] {
     let result: Result[] = []

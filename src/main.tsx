@@ -20,7 +20,7 @@ import { exampleSetup } from "prosemirror-example-setup"
 import { mySchema,initialDoc } from "./schema"
 import {CodeBlockView,arrowHandlers} from "./codemirror"
 import { defaultSettings, imagePlugin } from "prosemirror-image-plugin"
-import { searchReplacePlugin2 } from './findreplace copy';
+import { searchReplacePlugin2 } from './findreplace2';
 
 
 let editor = document.querySelector("#editor")!
@@ -51,6 +51,16 @@ document.getElementById('go')?.addEventListener('click', () => {
   }))
 })
 */
+
+document.getElementById('search')?.addEventListener('change', () => {
+  let s = editor.querySelector(".ProseMirror")!.innerHTML
+  content.innerHTML = s
+  view.updateState(EditorState.create({
+    doc: DOMParser.fromSchema(mySchema).parse(content),
+    plugins: exampleSetup({ schema: mySchema })
+  }))
+})
+
 /*
 // Words you probably shouldn't use
 const badWords = /\b(obviously|clearly|evidently|simply)\b/ig
@@ -161,3 +171,4 @@ let lintPlugin = new Plugin({
   }
 })
 */
+
