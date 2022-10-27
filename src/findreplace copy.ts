@@ -14,27 +14,13 @@ interface Dispatch {
   //const badWords = /\b(obviously|clearly|evidently|simply)\b/ig
   // Matches punctuation with a space before it
   //const badPunc = / ([,\.!?:]) ?/g
-  const search = document.querySelector('#search') as HTMLInputElement;
-  let replace = document.querySelector('#replace') as HTMLInputElement;
-  let searchs: string
-
-  search?.addEventListener('change', () => {
-    let searchinput = document.getElementById('search') as HTMLInputElement;
-    var searchs = searchinput?.value
-  })
-
-  /*
-  search!.addEventListener('change', updateSearch);
-  function updateSearch(s){
-    const searchs = s?.value
-    return searchs
-  }
-  //const searchs = ''
+  const search = document.getElementById('search') as HTMLInputElement;
+  const searchs = search?.value
   //const searchString = new RegExp(searchs)
 
   const replace = document.getElementById('replace') as HTMLInputElement;
   const replaceString = replace?.value
- */ 
+  
   interface Result {
     from: number, to: number, fix?: (props: Dispatch)=>void
   }
