@@ -42,6 +42,7 @@ let view = new EditorView(editor, {
 let search = document.querySelector('#search') as HTMLInputElement;
 let replace = document.querySelector('#replace') as HTMLInputElement;
 
+/*
 document.getElementById('go')?.addEventListener('click', () => {
   let s = editor.querySelector(".ProseMirror")!.innerHTML
   content.innerHTML = s.replaceAll(search.value, replace.value)
@@ -50,9 +51,9 @@ document.getElementById('go')?.addEventListener('click', () => {
     plugins: exampleSetup({ schema: mySchema })
   }))
 })
+*/
 
-
-document.querySelector('search')?.addEventListener('change', () => {
+document.getElementById('search')?.addEventListener('change', () => {
   let s = editor.querySelector(".ProseMirror")!.innerHTML
   content.innerHTML = s
   view.updateState(EditorState.create({
