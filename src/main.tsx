@@ -13,7 +13,7 @@ import {searchReplacePlugin} from './findreplace'
 //     <App />
 //   </React.StrictMode>
 // )
-import { EditorState } from "prosemirror-state"
+import { EditorState, Transaction } from "prosemirror-state"
 import { EditorView } from "prosemirror-view"
 import { DOMParser, Fragment, Node, NodeType } from "prosemirror-model"
 import { exampleSetup } from "prosemirror-example-setup"
@@ -54,11 +54,9 @@ document.getElementById('go')?.addEventListener('click', () => {
 */
 
 document.getElementById('search')?.addEventListener('change', () => {
-  let s = editor.querySelector(".ProseMirror")!.innerHTML
-  content.innerHTML = s
-  view.updateState(EditorState.create({
-    doc: DOMParser.fromSchema(mySchema).parse(content),
-    plugins: exampleSetup({ schema: mySchema })
+  return function (state: EditorState, dispatch){
+    let {$from} = state.selection, index = $from.index()
+    dispatch(state.tr.replaceSelectionWith(view.doc.create()))
   }))
 })
 
