@@ -12,16 +12,25 @@ interface Dispatch {
     ["data-problem"]?: Result 
   }
 
+  //var search : HTMLInputElement;
+  //var searchs: string;
+  
+  /*
+  document.querySelector('#search')?.addEventListener('change', ()=> {  
+    return function(state:EditorState, dispatch: (tr: Transaction) => void){
+      if (dispatch)
+      dispatch(state.tr.scrollIntoView())
+  }})
+*/
+  //const searchString = new RegExp(searchs)
   var search : HTMLInputElement;
   var searchs: string;
-  
+
   document.querySelector('#search')?.addEventListener('change', ()=> {  
     search = document.getElementById('search') as HTMLInputElement;
     searchs = search?.value
     return searchs
   });
-
-  //const searchString = new RegExp(searchs)
 
   const replace = document.getElementById('replace') as HTMLInputElement;
   const replaceString = replace?.value

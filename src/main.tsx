@@ -55,7 +55,7 @@ let view = new EditorView(editor, {
       //.concat(arrowHandlers),
       imagePlugin(sch, { ...defaultSettings }),
       lintPlugin,
-      //searchReplacePlugin2
+      searchReplacePlugin2
     ]
   }),
  // nodeViews: {code_block: (node, view, getPos) => new CodeBlockView(node, view, getPos)}
@@ -65,21 +65,20 @@ let view = new EditorView(editor, {
 let search = document.querySelector('#search') as HTMLInputElement;
 let replace = document.querySelector('#replace') as HTMLInputElement;
 
-/*
-document.getElementById('go')?.addEventListener('click', () => {
+
+document.getElementById('search')?.addEventListener('change', () => {
   let s = editor.querySelector(".ProseMirror")!.innerHTML
-  content.innerHTML = s.replaceAll(search.value, replace.value)
+  content.innerHTML = s
   view.updateState(EditorState.create({
-    doc: DOMParser.fromSchema(mySchema).parse(content),
-    plugins: exampleSetup({ schema: mySchema })
+    doc: DOMParser.fromSchema(dinoSchema).parse(content),
+    plugins: exampleSetup({ schema: dinoSchema })
   }))
 })
-*/
+
 /*
 document.getElementById('search')?.addEventListener('change', () => {
-  return function (state: EditorState, dispatch){
-    let {$from} = state.selection, index = $from.index()
-    dispatch(state.tr.replaceSelectionWith(view.doc.create()))
-  }))
-})
+  return function(state:EditorState, dispatch: (tr: Transaction) => void){
+    if (dispatch)
+    dispatch(state.tr.scrollIntoView())
+}})
 */
