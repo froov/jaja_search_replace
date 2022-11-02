@@ -52,11 +52,11 @@ document.getElementById('go')?.addEventListener('click', () => {
   }))
 })
 */
-
+/*
 document.getElementById('search')?.addEventListener('change', () => {
   return function (state: EditorState, dispatch){
     let {$from} = state.selection, index = $from.index()
     dispatch(state.tr.replaceSelectionWith(view.doc.create()))
   }))
 })
-
+*/

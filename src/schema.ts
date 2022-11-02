@@ -4,6 +4,7 @@ import { schema } from "prosemirror-schema-basic"
 import { addListNodes } from "prosemirror-schema-list"
 import { defaultSettings as imageSettings, updateImageNode } from "prosemirror-image-plugin"
 import OrderedMap from "orderedmap";
+import { dinoNodeSpec } from "./dinos";
 
  // Ugly hack for checking schema spec type..
 if (!(schema.spec.nodes instanceof OrderedMap))
@@ -47,9 +48,12 @@ type: "doc",
 // create a schema with list support.
 
 export const mySchema = new Schema({
-  nodes: updateImageNode(schema.spec.nodes, {
+  nodes:{ 
+    image: updateImageNode(schema.spec.nodes, {
     ...imageSettings,
   }),
+    dinos: schema.spec.nodes.addBefore("image", "dino", dinoNodeSpec),
+},
   marks: schema.spec.marks,
 });
 
