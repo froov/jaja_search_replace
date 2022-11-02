@@ -12,7 +12,7 @@ import { Command, Plugin } from 'prosemirror-state';
 const dinos = ["brontosaurus", "stegosaurus", "triceratops",
                "tyrannosaurus", "pterodactyl"]
 
-export const dinoNodeSpec: NodeSpec = {
+export var dinoNodeSpec: NodeSpec = {
     // Dinosaurs have one attribute, their type, which must be one of
     // the types defined above.
     // Brontosaurs are still the default dino.
@@ -56,11 +56,19 @@ function insertDino(type: string) {
 }
 
 // Ask example-setup to build its basic menu
-let menu = buildMenuItems(mySchema)
+var menu = buildMenuItems(mySchema)
 // Add a dino-inserting item for each type of dino
-dinos.forEach(name => menu.insertMenu.content.push(new MenuItem({
+let m = menu.insertMenu as Dropdown2;
+dinos.forEach(name => m.content.push(new MenuItem({
   title: "Insert " + name,
   label: name.charAt(0).toUpperCase() + name.slice(1),
-  enable(state) { return insertDino(name)(state) },
+  enable: (state: EditorState) => { return insertDino(name)(state, null) },
   run: insertDino(name)
 })))
+
+interface Dropdown2 extends Dropdown {
+  content: MenuItem[]; 
+  fullMenu: MenuItem[][];
+}
+
+export {m, menu};
