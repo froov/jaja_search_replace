@@ -7,6 +7,9 @@ import "prosemirror-image-plugin/dist/styles/withResize.css";
 import "prosemirror-image-plugin/dist/styles/sideResize.css";
 import {lintPlugin} from './lint'
 import {searchReplacePlugin} from './findreplace'
+import {menu} from './dinos'
+import {MenuItem} from "prosemirror-menu"
+import {buildMenuItems} from "prosemirror-example-setup"
 
 // ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 //   <React.StrictMode>
@@ -29,7 +32,10 @@ let view = new EditorView(editor, {
   state: EditorState.create({
     doc: mySchema.nodeFromJSON(initialDoc),
     plugins: [
-      ...exampleSetup({ schema: mySchema }).concat(arrowHandlers),
+      ...exampleSetup({ 
+        schema: mySchema,
+        menuContent: menu
+       }).concat(arrowHandlers),
       imagePlugin(mySchema, { ...defaultSettings }),
       lintPlugin,
       searchReplacePlugin2
