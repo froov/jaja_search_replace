@@ -9,7 +9,7 @@ import {lintPlugin} from './lint'
 import {searchReplacePlugin} from './findreplace'
 import {MenuItem} from "prosemirror-menu"
 import {buildMenuItems} from "prosemirror-example-setup"
-import {m, menu} from "./dinos"
+import {dinoMenu,dinoSchema} from "./dinos"
 
 // ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 //   <React.StrictMode>
@@ -20,28 +20,45 @@ import { EditorState, Transaction } from "prosemirror-state"
 import { EditorView } from "prosemirror-view"
 import { DOMParser, Fragment, Node, NodeType } from "prosemirror-model"
 import { exampleSetup } from "prosemirror-example-setup"
-import { mySchema,initialDoc } from "./schema"
-import {CodeBlockView,arrowHandlers} from "./codemirror"
+import { initialDoc } from "./schema"
+//import {CodeBlockView,arrowHandlers} from "./codemirror"
 import { defaultSettings, imagePlugin } from "prosemirror-image-plugin"
 import { searchReplacePlugin2 } from './findreplace2';
+
+const sch = dinoSchema
+const doc =  {
+  type: "doc",
+  content: [
+    {
+      content: [
+        {
+          text: "Start typing!",
+          type: "text",
+        },
+      ],
+      type: "paragraph",
+    },
+  ]
+}
 
 
 let editor = document.querySelector("#editor")!
 let content = document.querySelector("#content")!
 let view = new EditorView(editor, {
   state: EditorState.create({
-    doc: mySchema.nodeFromJSON(initialDoc),
+    doc: sch.nodeFromJSON(doc),
     plugins: [
       ...exampleSetup({ 
-        schema: mySchema,
-        menuContent: m.fullMenu
-       }).concat(arrowHandlers),
-      imagePlugin(mySchema, { ...defaultSettings }),
+        schema: sch,
+        menuContent: dinoMenu
+       }),
+      //.concat(arrowHandlers),
+      imagePlugin(sch, { ...defaultSettings }),
       lintPlugin,
       //searchReplacePlugin2
     ]
   }),
-  nodeViews: {code_block: (node, view, getPos) => new CodeBlockView(node, view, getPos)}
+ // nodeViews: {code_block: (node, view, getPos) => new CodeBlockView(node, view, getPos)}
 })
 
 

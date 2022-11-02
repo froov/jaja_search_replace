@@ -1,10 +1,11 @@
 import { Schema, NodeSpec, Node } from "prosemirror-model"
 import { EditorState } from "prosemirror-state"
-import { mySchema } from "./schema"
+
 import { Dropdown, DropdownSubmenu, IconSpec, MenuElement, MenuItem, MenuItemSpec, blockTypeItem, icons, joinUpItem, liftItem, menuBar, redoItem, renderGrouped, selectParentNodeItem, undoItem, wrapItem } from "prosemirror-menu"
 import {buildInputRules, buildKeymap, buildMenuItems, exampleSetup } from "prosemirror-example-setup"
 import { Transaction } from "prosemirror-state"
 import { Command, Plugin } from 'prosemirror-state';
+import { schema } from "prosemirror-schema-basic"
 
 
 
@@ -42,10 +43,14 @@ export var dinoNodeSpec: NodeSpec = {
         }]
     }
 
-let dinoType = mySchema.nodes.dino
+export const dinoSchema = new Schema({
+  nodes: schema.spec.nodes.addBefore("image", "dino", dinoNodeSpec),
+  marks: schema.spec.marks
+})
+const  dinoType = dinoSchema.nodes.dino
 
 function insertDino(type: string) {
-  return function(state:EditorState, dispatch: (tr: Transaction) => void) {
+  return function(state:EditorState, dispatch: null|((tr: Transaction) => void)) {
     let {$from} = state.selection, index = $from.index()
     if (!$from.parent.canReplaceWith(index, index, dinoType))
       return false
@@ -56,7 +61,8 @@ function insertDino(type: string) {
 }
 
 // Ask example-setup to build its basic menu
-var menu = buildMenuItems(mySchema)
+var menu = buildMenuItems(dinoSchema)
+
 // Add a dino-inserting item for each type of dino
 let m = menu.insertMenu as Dropdown2;
 dinos.forEach(name => m.content.push(new MenuItem({
@@ -71,4 +77,7 @@ interface Dropdown2 extends Dropdown {
   fullMenu: MenuItem[][];
 }
 
-export {m, menu};
+export const dinoMenu = menu.fullMenu as MenuItem[][]
+
+// Mix the nodes from prosemirror-schema-list into the basic schema to
+// create a schema with list support.
