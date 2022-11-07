@@ -18,7 +18,7 @@ import {dinoMenu,dinoSchema} from "./dinos"
 // )
 import { EditorState, Transaction } from "prosemirror-state"
 import { EditorView } from "prosemirror-view"
-import { DOMParser, Fragment, Node, NodeType } from "prosemirror-model"
+import { DOMParser, Fragment, Node, NodeType, Slice } from "prosemirror-model"
 import { exampleSetup } from "prosemirror-example-setup"
 import { initialDoc } from "./schema"
 //import {CodeBlockView,arrowHandlers} from "./codemirror"
@@ -67,22 +67,9 @@ let replace = document.querySelector('#replace') as HTMLInputElement;
 
 
 document.getElementById('search')?.addEventListener('change', () => {
-  return new EditorView(editor, {
-    state: EditorState.create({
-      doc: sch.nodeFromJSON(doc),
-      plugins: [
-        ...exampleSetup({ 
-          schema: sch,
-          menuContent: dinoMenu
-         }),
-        //.concat(arrowHandlers),
-        imagePlugin(sch, { ...defaultSettings }),
-        lintPlugin,
-        searchReplacePlugin2
-      ]
-    }),
-   // nodeViews: {code_block: (node, view, getPos) => new CodeBlockView(node, view, getPos)}
-  })
+  return function(state:EditorState) {
+    return state.tr.replace(0, state.doc.content.size, new Slice(state.doc.content, 0, 0))
+  }
 })
 
 /*
