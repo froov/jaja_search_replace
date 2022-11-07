@@ -67,12 +67,8 @@ let replace = document.querySelector('#replace') as HTMLInputElement;
 
 
 document.getElementById('search')?.addEventListener('change', () => {
-  let s = editor.querySelector(".ProseMirror")!.innerHTML
-  content.innerHTML = s
-  view.updateState(EditorState.create({
-    doc: DOMParser.fromSchema(dinoSchema).parse(content),
-    plugins: exampleSetup({ schema: dinoSchema })
-  }))
+  let state = EditorState.tr
+  state.apply(tr, old) { return tr.docChanged ? searchDeco(tr.doc) : old }
 })
 
 /*
