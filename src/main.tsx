@@ -19,6 +19,7 @@ import {dinoMenu,dinoSchema} from "./dinos"
 import { EditorState, Transaction } from "prosemirror-state"
 import { EditorView } from "prosemirror-view"
 import { DOMParser, Fragment, Node, NodeType, Slice } from "prosemirror-model"
+import { Transform } from 'prosemirror-transform';
 import { exampleSetup } from "prosemirror-example-setup"
 import { initialDoc } from "./schema"
 //import {CodeBlockView,arrowHandlers} from "./codemirror"
@@ -67,10 +68,31 @@ let replace = document.querySelector('#replace') as HTMLInputElement;
 
 
 document.getElementById('search')?.addEventListener('change', () => {
-  return function(state:EditorState) {
-    return state.tr.replace(0, state.doc.content.size, new Slice(state.doc.content, 0, 0))
-  }
-})
+    let state = EditorState.create({
+      doc: DOMParser.fromSchema(dinoSchema).parse(content),
+      plugins: [
+        ...exampleSetup({ 
+          schema: sch,
+          menuContent: dinoMenu
+         }),
+        //.concat(arrowHandlers),
+        imagePlugin(sch, { ...defaultSettings }),
+        lintPlugin,
+        searchReplacePlugin2
+      ]
+    })
+    let transaction = new Transform(doc)
+    let view = new EditorView(document.body, {
+    state,
+    dispatchTransaction(transaction) {
+      console.log("Document size went from", transaction.before.content.size,
+                  "to", transaction.doc.content.size)
+      let newState = view.state.apply(transaction)
+      view.updateState(newState)
+    }
+  })
+}
+)
 
 /*
 document.getElementById('search')?.addEventListener('change', () => {
