@@ -23,7 +23,7 @@ import { exampleSetup } from "prosemirror-example-setup"
 import { initialDoc } from "./schema"
 //import {CodeBlockView,arrowHandlers} from "./codemirror"
 import { defaultSettings, imagePlugin } from "prosemirror-image-plugin"
-import { searchReplacePlugin2 } from './findreplace2';
+import { searchReplacePlugin2, searchs } from './findreplace2';
 
 const sch = dinoSchema
 const doc =  {
@@ -67,8 +67,22 @@ let replace = document.querySelector('#replace') as HTMLInputElement;
 
 
 document.getElementById('search')?.addEventListener('change', () => {
-  let state = EditorState.tr
-  state.apply(tr, old) { return tr.docChanged ? searchDeco(tr.doc) : old }
+  return new EditorView(editor, {
+    state: EditorState.create({
+      doc: sch.nodeFromJSON(doc),
+      plugins: [
+        ...exampleSetup({ 
+          schema: sch,
+          menuContent: dinoMenu
+         }),
+        //.concat(arrowHandlers),
+        imagePlugin(sch, { ...defaultSettings }),
+        lintPlugin,
+        searchReplacePlugin2
+      ]
+    }),
+   // nodeViews: {code_block: (node, view, getPos) => new CodeBlockView(node, view, getPos)}
+  })
 })
 
 /*

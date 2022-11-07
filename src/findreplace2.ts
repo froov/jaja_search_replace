@@ -24,7 +24,7 @@ interface Dispatch {
 */
   //const searchString = new RegExp(searchs)
   var search : HTMLInputElement;
-  var searchs: string;
+  export var searchs: string;
 
   document.querySelector('#search')?.addEventListener('change', ()=> {  
     search = document.getElementById('search') as HTMLInputElement;
