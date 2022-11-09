@@ -10,7 +10,9 @@
     define(["../../lib/codemirror"], mod);
   else // Plain browser env
     mod(CodeMirror);
-})(function(CodeMirror) {
+})
+
+(function(CodeMirror) {
   function dialogDiv(cm, template, bottom) {
     var wrap = cm.getWrapperElement();
     var dialog;

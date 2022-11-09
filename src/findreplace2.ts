@@ -22,6 +22,25 @@ interface Dispatch {
       dispatch(state.tr.scrollIntoView())
   }})
 */
+  //implement find box
+  function dialogDiv(doc:EditorView, template: any, bottom?:boolean) {
+    var wrap = doc.dom
+    var dialog;
+    dialog = wrap.appendChild(document.createElement("div"));
+    if (bottom)
+      dialog.className = "CodeMirror-dialog CodeMirror-dialog-bottom";
+    else
+      dialog.className = "CodeMirror-dialog CodeMirror-dialog-top";
+
+    if (typeof template == "string") {
+      dialog.innerHTML = template;
+    } else { // Assuming it's a detached DOM element.
+      dialog.appendChild(template);
+    }
+    CodeMirror.addClass(wrap, 'dialog-opened');
+    return dialog;
+  }
+
   //const searchString = new RegExp(searchs)
   var search : HTMLInputElement;
   export var searchs: string;
