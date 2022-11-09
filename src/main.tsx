@@ -45,8 +45,8 @@ const doc =  {
 
 let editor = document.querySelector("#editor")!
 let content = document.querySelector("#content")!
-let view = new EditorView(editor, {
-  state: EditorState.create({
+let editorState = {
+  editor: EditorState.create({
     doc: sch.nodeFromJSON(doc),
     plugins: [
       ...exampleSetup({ 
@@ -59,6 +59,9 @@ let view = new EditorView(editor, {
       searchReplacePlugin2
     ]
   }),
+}
+let view = new EditorView(editor, {
+  state: editorState.editor,
  // nodeViews: {code_block: (node, view, getPos) => new CodeBlockView(node, view, getPos)}
 })
 
@@ -68,29 +71,7 @@ let replace = document.querySelector('#replace') as HTMLInputElement;
 
 
 document.getElementById('search')?.addEventListener('change', () => {
-    let state = EditorState.create({
-      doc: DOMParser.fromSchema(dinoSchema).parse(content),
-      plugins: [
-        ...exampleSetup({ 
-          schema: sch,
-          menuContent: dinoMenu
-         }),
-        //.concat(arrowHandlers),
-        imagePlugin(sch, { ...defaultSettings }),
-        lintPlugin,
-        searchReplacePlugin2
-      ]
-    })
-    let transaction = new Transform(doc)
-    let view = new EditorView(document.body, {
-    state,
-    dispatchTransaction(transaction) {
-      console.log("Document size went from", transaction.before.content.size,
-                  "to", transaction.doc.content.size)
-      let newState = view.state.apply(transaction)
-      view.updateState(newState)
-    }
-  })
+    view.updateState(editorState.editor)
 }
 )
 
