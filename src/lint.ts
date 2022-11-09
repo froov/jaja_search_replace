@@ -4,7 +4,7 @@ import { Node } from "prosemirror-model"
 
 // we want to treat the "search" pattern as a lint, but then mark it differently
 // in general we might want different kinds of lint, like chill blue and angry red.
-const chillColor = 'blue'
+const chillColor = 'purple'
 
 // this should probably not be globals; we might want to have two editors with different search parameters
 
