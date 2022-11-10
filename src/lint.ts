@@ -244,7 +244,7 @@ export function searchCommand(s: string): Command {
     }
     if (dispatch) {
       let newSearch = {
-        ...sd, //why does spreading sd here set it equal to search data type?
+        ...sd, 
         searchPattern: s
       }
       console.log(newSearch)

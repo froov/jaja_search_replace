@@ -69,7 +69,10 @@ document.getElementById('search')?.addEventListener('input', () => {
   console.log(search.value)
     if (search.value && replace.value == "") {
       searchCommand(search.value)(view.state, view.dispatch, view)
-    } else if (search.value && replace.value){
+      console.log("search edit")
+    }
+    if (search.value && replace.value){
+      console.log("SearchReplace Search edit")
       searchreplaceCommand(search.value, replace.value)(view.state, view.dispatch, view)
     }
 })
@@ -81,6 +84,7 @@ document.getElementById('replace')?.addEventListener('input', () => {
     }
     if (search.value && replace.value){
       searchreplaceCommand(search.value, replace.value)(view.state, view.dispatch, view)
+      console.log("SearchReplace Replace Edit")
     }
 })
 
@@ -88,6 +92,7 @@ document.getElementById('go')?.addEventListener('click',()=> {
   console.log(search.value)
     if (search.value) {
       searchreplaceCommand(search.value, replace.value)(view.state, view.dispatch, view)
+      
     }
 })
 
