@@ -5,7 +5,7 @@ import './index.css'
 import "prosemirror-image-plugin/dist/styles/common.css";
 import "prosemirror-image-plugin/dist/styles/withResize.css";
 import "prosemirror-image-plugin/dist/styles/sideResize.css";
-import {lintPlugin, searchCommand, replaceCommand} from './lint'
+import {lintPlugin, searchCommand, searchreplaceCommand} from './lint'
 
 import {MenuItem} from "prosemirror-menu"
 import {buildMenuItems} from "prosemirror-example-setup"
@@ -67,15 +67,27 @@ let replace = document.querySelector('#replace') as HTMLInputElement;
 
 document.getElementById('search')?.addEventListener('input', () => {
   console.log(search.value)
-    if (search.value) {
+    if (search.value && replace.value == "") {
       searchCommand(search.value)(view.state, view.dispatch, view)
+    } else if (search.value && replace.value){
+      searchreplaceCommand(search.value, replace.value)(view.state, view.dispatch, view)
+    }
+})
+
+document.getElementById('replace')?.addEventListener('input', () => {
+  console.log(replace.value)
+    if (replace.value && search.value == "") {
+      //searchCommand(search.value)(view.state, view.dispatch, view)
+    }
+    if (search.value && replace.value){
+      searchreplaceCommand(search.value, replace.value)(view.state, view.dispatch, view)
     }
 })
 
 document.getElementById('go')?.addEventListener('click',()=> {
   console.log(search.value)
     if (search.value) {
-      replaceCommand(search.value, replace.value)(view.state, view.dispatch, view)
+      searchreplaceCommand(search.value, replace.value)(view.state, view.dispatch, view)
     }
 })
 

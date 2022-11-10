@@ -254,7 +254,7 @@ export function searchCommand(s: string): Command {
   }
 }
 
-export function replaceCommand(s: string, r: string): Command {
+export function searchreplaceCommand(s: string, r?: string): Command {
   return (state: EditorState, dispatch) => {
     let sd = pluginKey.getState(state)
     if (!sd) {
