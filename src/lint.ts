@@ -4,7 +4,7 @@ import { Node } from "prosemirror-model"
 
 // we want to treat the "search" pattern as a lint, but then mark it differently
 // in general we might want different kinds of lint, like chill blue and angry red.
-const chillColor = 'purple'
+const chillColor = 'blue'
 
 // this should probably not be globals; we might want to have two editors with different search parameters
 
@@ -23,6 +23,7 @@ export const pluginKey = new PluginKey<SearchData>('search-replace2');
 function getSearch(editorState: EditorState) {
   return pluginKey.getState(editorState);
 }
+
 class Match {
   constructor(public begin: number, public end: number) {}
 }
@@ -85,11 +86,18 @@ function lint(doc: Node, sd: SearchData) {
       // add search 
       const sr = search(node.text ?? "", sd)
       for (let o of sr) {
+        const from = pos + o.begin
+        const to = pos + o.end
+        const fix = ({ state, dispatch }: Dispatch) => {
+          dispatch(state.tr.replaceWith(from, to,
+            state.schema.text(sd.replace)))
+        }
         result.push({
           color: 'green',
-          msg: sd.replace,
-          from: pos + o.begin,
-          to: pos + o.end
+          msg: "Click to replace with " + '"' + sd.replace + '"',
+          from,
+          to,
+          fix
         })
       }
 
@@ -148,6 +156,7 @@ function lint(doc: Node, sd: SearchData) {
   return result
 }
 // returns the new state of the plugin.
+
 function lintDeco(doc: Node, sd: SearchData): SearchData {
   let decos: Decoration[] = []
   lint(doc, sd).forEach(prob => {
@@ -235,8 +244,28 @@ export function searchCommand(s: string): Command {
     }
     if (dispatch) {
       let newSearch = {
-        ...sd,
+        ...sd, //why does spreading sd here set it equal to search data type?
         searchPattern: s
+      }
+      console.log(newSearch)
+      dispatch(state.tr.setMeta(pluginKey,newSearch))
+    }
+    return true
+  }
+}
+
+export function replaceCommand(s: string, r: string): Command {
+  return (state: EditorState, dispatch) => {
+    let sd = pluginKey.getState(state)
+    if (!sd) {
+      console.log("no state")
+      return false
+    }
+    if (dispatch) {
+      let newSearch = {
+        ...sd,
+        searchPattern: s,
+        replace: r
       }
       console.log(newSearch)
       dispatch(state.tr.setMeta(pluginKey,newSearch))

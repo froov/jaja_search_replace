@@ -5,7 +5,7 @@ import './index.css'
 import "prosemirror-image-plugin/dist/styles/common.css";
 import "prosemirror-image-plugin/dist/styles/withResize.css";
 import "prosemirror-image-plugin/dist/styles/sideResize.css";
-import {lintPlugin, searchCommand} from './lint'
+import {lintPlugin, searchCommand, replaceCommand} from './lint'
 
 import {MenuItem} from "prosemirror-menu"
 import {buildMenuItems} from "prosemirror-example-setup"
@@ -70,6 +70,17 @@ document.getElementById('search')?.addEventListener('input', () => {
     if (search.value) {
       searchCommand(search.value)(view.state, view.dispatch, view)
     }
+})
+
+document.getElementById('go')?.addEventListener('click',()=> {
+  console.log(search.value)
+    if (search.value) {
+      replaceCommand(search.value, replace.value)(view.state, view.dispatch, view)
+    }
+})
+
+document.getElementById('case')?.addEventListener('click',()=> {
+  console.log('caseSensitive')
 })
 
 /*
