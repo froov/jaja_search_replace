@@ -25,16 +25,16 @@ function getSearch(editorState: EditorState) {
 }
 
 class Match {
-  constructor(public begin: number, public end: number) {}
+  constructor(public begin: number, public end: number) { }
 }
 
 export function searchfun(s: string, p: SearchData): Match[] {
   if (!p.searchPattern)
     return []
   const r: Match[] = []
-  const sp = p.matchCase?p.searchPattern:p.searchPattern.toLowerCase()
-  const xx = p.matchCase?s:s.toLowerCase()
-  let idx  = xx.indexOf(sp)
+  const sp = p.matchCase ? p.searchPattern : p.searchPattern.toLowerCase()
+  const xx = p.matchCase ? s : s.toLowerCase()
+  let idx = xx.indexOf(sp)
 
   while (idx !== -1) {
     r.push(new Match(idx, idx + p.searchPattern.length));
@@ -92,7 +92,7 @@ function lint(doc: Node, sd: SearchData) {
           dispatch(state.tr.replaceWith(from, to,
             state.schema.text(sd.replace)))
         }
-        if (sd.replace == ""){
+        if (sd.replace == "") {
           result.push({
             color: 'green',
             msg: "Word found",
@@ -100,13 +100,13 @@ function lint(doc: Node, sd: SearchData) {
             to
           })
         } else
-        result.push({
-          color: 'green',
-          msg: "Double click to replace with " + '"' + sd.replace + '"',
-          from,
-          to,
-          fix
-        })
+          result.push({
+            color: 'green',
+            msg: "Double click to replace with " + '"' + sd.replace + '"',
+            from,
+            to,
+            fix
+          })
       }
 
 
@@ -172,7 +172,7 @@ function lintDeco(doc: Node, sd: SearchData): SearchData {
     decos.push(Decoration.inline(prob.from, prob.to, { class: cl }),
       Decoration.widget(prob.from, lintIcon(prob)))
   })
-  const r =  {
+  const r = {
     ...sd,
     ds: DecorationSet.create(doc, decos)
   }
@@ -200,7 +200,7 @@ export function lintPlugin() {
       // this runs every time the document changes, not efficient.
       apply(tr, old) {
         const getMeta = tr.getMeta(pluginKey)
-        if (getMeta){
+        if (getMeta) {
           return lintDeco(tr.doc, getMeta)
         }
         console.log("changed",)
@@ -243,7 +243,7 @@ export function lintPlugin() {
 }
 
 // build a search command
-export function searchCommand(s: string): Command {
+export function setSearchCommand(s: string): Command {
   return (state: EditorState, dispatch) => {
     let sd = pluginKey.getState(state)
     if (!sd) {
@@ -252,17 +252,17 @@ export function searchCommand(s: string): Command {
     }
     if (dispatch) {
       let newSearch = {
-        ...sd, 
+        ...sd,
         searchPattern: s
       }
       console.log(newSearch)
-      dispatch(state.tr.setMeta(pluginKey,newSearch))
+      dispatch(state.tr.setMeta(pluginKey, newSearch))
     }
     return true
   }
 }
 
-export function searchreplaceCommand(s: string, r?: string): Command {
+export function setReplaceCommand(r: string): Command {
   return (state: EditorState, dispatch) => {
     let sd = pluginKey.getState(state)
     if (!sd) {
@@ -272,43 +272,38 @@ export function searchreplaceCommand(s: string, r?: string): Command {
     if (dispatch) {
       let newSearch = {
         ...sd,
-        searchPattern: s,
-        replace: r
+         replace: r
       }
       console.log(newSearch)
-      dispatch(state.tr.setMeta(pluginKey,newSearch))
+      dispatch(state.tr.setMeta(pluginKey, newSearch))
     }
     return true
   }
 }
 
-export function replaceCommand(s: string, r: string, doc:Node): Command {
-  return (state: EditorState, dispatch) => {
-    let sd = pluginKey.getState(state)
-    if (!sd) {
-      console.log("no state")
-      return false
-    }
-    if (dispatch) {
-      let newSearch = {
-        ...sd,
-        searchPattern: s,
-        replace: r
-      }
-      // console.log(newSearch)
-      // dispatch(state.tr.setMeta(pluginKey,newSearch))
+type DispatchFn = ((tr:Transaction)=>void) | undefined
+
+export const replaceCommand : Command =  (state: EditorState, dispatch: DispatchFn) => {
+    const sd = pluginKey.getState(state)
+    if (sd) {
+      let tr = state.tr
+      let doc = state.doc
+      let delta =  sd.replace.length - sd.searchPattern.length
+      let offset = 0
       doc.descendants((node: Node, pos: number, parent: Node | null) => {
-        if (node.isText) {
-          const sr = searchfun(node.text ?? "", newSearch)
+        if (node.isText && node.text) {
+          const sr = searchfun(node.text, sd)
+          console.log("found", sr)
           for (let o of sr) {
-            const from = pos + o.begin
-            const to = pos + o.end
-            dispatch(state.tr.replaceWith(from, to,
-            state.schema.text(newSearch.replace)))
-           }
+            tr = tr.replaceWith(pos + o.begin+offset, pos + o.end+offset,
+              state.schema.text(sd.replace))
+            offset += delta
           }
-          })
-  }
+        }
+      })
+
+      if (dispatch)
+        dispatch(tr)      
+    }
     return true
-  }
 }

@@ -5,7 +5,7 @@ import './index.css'
 import "prosemirror-image-plugin/dist/styles/common.css";
 import "prosemirror-image-plugin/dist/styles/withResize.css";
 import "prosemirror-image-plugin/dist/styles/sideResize.css";
-import {lintPlugin, searchCommand, searchreplaceCommand, searchfun, replaceCommand} from './lint'
+import {lintPlugin, setSearchCommand,setReplaceCommand, replaceCommand} from './lint'
 
 import {MenuItem} from "prosemirror-menu"
 import {buildMenuItems} from "prosemirror-example-setup"
@@ -64,33 +64,19 @@ let view = new EditorView(editor, {
 
 let search = document.querySelector('#search') as HTMLInputElement;
 let replace = document.querySelector('#replace') as HTMLInputElement;
-
+let replaceButton = document.querySelector('#replaceButton') as HTMLInputElement;
 document.getElementById('search')?.addEventListener('input', () => {
-  console.log(search.value)
-    if (search.value && replace.value == "") {
-      searchreplaceCommand(search.value, replace.value)(view.state, view.dispatch, view)
-      console.log("search edit")
-    }
-    if (search.value && replace.value){
-      console.log("SearchReplace Search edit")
-      searchreplaceCommand(search.value, replace.value)(view.state, view.dispatch, view)
-    }
+  setSearchCommand(search.value)(view.state, view.dispatch, view)
+  replaceButton.disabled = !search.value
 })
 
 document.getElementById('replace')?.addEventListener('input', () => {
-  console.log(replace.value)
-    if (replace.value && search.value == "") {
-      //searchCommand(search.value)(view.state, view.dispatch, view)
-    }
-    if (search.value && replace.value){
-      searchreplaceCommand(search.value, replace.value)(view.state, view.dispatch, view)
-      console.log("SearchReplace Replace Edit")
-    }
+  setReplaceCommand(replace.value)(view.state, view.dispatch, view)
+  console.log("SearchReplace Replace Edit")
 })
 
-document.getElementById('go')?.addEventListener('click',()=> {
-  console.log("replace")
-  replaceCommand(search.value, replace.value, view.state.doc)
+document.getElementById('replaceButton')?.addEventListener('click',()=> {
+  replaceCommand(view.state, view.dispatch, view)
 })
 
 document.getElementById('case')?.addEventListener('click',()=> {
