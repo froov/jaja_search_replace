@@ -28,7 +28,7 @@ class Match {
   constructor(public begin: number, public end: number) {}
 }
 
-function search(s: string, p: SearchData): Match[] {
+export function searchfun(s: string, p: SearchData): Match[] {
   if (!p.searchPattern)
     return []
   const r: Match[] = []
@@ -84,7 +84,7 @@ function lint(doc: Node, sd: SearchData) {
   doc.descendants((node: Node, pos: number, parent: Node | null) => {
     if (node.isText) {
       // add search 
-      const sr = search(node.text ?? "", sd)
+      const sr = searchfun(node.text ?? "", sd)
       for (let o of sr) {
         const from = pos + o.begin
         const to = pos + o.end
@@ -92,9 +92,17 @@ function lint(doc: Node, sd: SearchData) {
           dispatch(state.tr.replaceWith(from, to,
             state.schema.text(sd.replace)))
         }
+        if (sd.replace == ""){
+          result.push({
+            color: 'green',
+            msg: "Word found",
+            from,
+            to
+          })
+        } else
         result.push({
           color: 'green',
-          msg: "Click to replace with " + '"' + sd.replace + '"',
+          msg: "Double click to replace with " + '"' + sd.replace + '"',
           from,
           to,
           fix
@@ -270,6 +278,37 @@ export function searchreplaceCommand(s: string, r?: string): Command {
       console.log(newSearch)
       dispatch(state.tr.setMeta(pluginKey,newSearch))
     }
+    return true
+  }
+}
+
+export function replaceCommand(s: string, r: string, doc:Node): Command {
+  return (state: EditorState, dispatch) => {
+    let sd = pluginKey.getState(state)
+    if (!sd) {
+      console.log("no state")
+      return false
+    }
+    if (dispatch) {
+      let newSearch = {
+        ...sd,
+        searchPattern: s,
+        replace: r
+      }
+      // console.log(newSearch)
+      // dispatch(state.tr.setMeta(pluginKey,newSearch))
+      doc.descendants((node: Node, pos: number, parent: Node | null) => {
+        if (node.isText) {
+          const sr = searchfun(node.text ?? "", newSearch)
+          for (let o of sr) {
+            const from = pos + o.begin
+            const to = pos + o.end
+            dispatch(state.tr.replaceWith(from, to,
+            state.schema.text(newSearch.replace)))
+           }
+          }
+          })
+  }
     return true
   }
 }

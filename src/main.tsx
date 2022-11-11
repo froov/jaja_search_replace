@@ -5,7 +5,7 @@ import './index.css'
 import "prosemirror-image-plugin/dist/styles/common.css";
 import "prosemirror-image-plugin/dist/styles/withResize.css";
 import "prosemirror-image-plugin/dist/styles/sideResize.css";
-import {lintPlugin, searchCommand, searchreplaceCommand} from './lint'
+import {lintPlugin, searchCommand, searchreplaceCommand, searchfun, replaceCommand} from './lint'
 
 import {MenuItem} from "prosemirror-menu"
 import {buildMenuItems} from "prosemirror-example-setup"
@@ -68,7 +68,7 @@ let replace = document.querySelector('#replace') as HTMLInputElement;
 document.getElementById('search')?.addEventListener('input', () => {
   console.log(search.value)
     if (search.value && replace.value == "") {
-      searchCommand(search.value)(view.state, view.dispatch, view)
+      searchreplaceCommand(search.value, replace.value)(view.state, view.dispatch, view)
       console.log("search edit")
     }
     if (search.value && replace.value){
@@ -89,11 +89,8 @@ document.getElementById('replace')?.addEventListener('input', () => {
 })
 
 document.getElementById('go')?.addEventListener('click',()=> {
-  console.log(search.value)
-    if (search.value) {
-      searchreplaceCommand(search.value, replace.value)(view.state, view.dispatch, view)
-      
-    }
+  console.log("replace")
+  replaceCommand(search.value, replace.value, view.state.doc)
 })
 
 document.getElementById('case')?.addEventListener('click',()=> {
