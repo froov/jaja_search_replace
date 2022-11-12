@@ -66,14 +66,18 @@ let search = document.querySelector('#search') as HTMLInputElement;
 let replace = document.querySelector('#replace') as HTMLInputElement;
 let caseSensitive = document.querySelector('#caseSensitive') as HTMLInputElement;
 let replaceButton = document.querySelector('#replaceButton') as HTMLInputElement;
+let replaceNextButton = document.querySelector('#replaceNextButton') as HTMLInputElement;
+
 document.getElementById('search')?.addEventListener('input', () => {
   setSearchCommand(search.value)(view.state, view.dispatch, view)
-  replaceButton.disabled = !replace.value
+  replaceButton.disabled = !search.value
+  replaceNextButton.disabled = !search.value
 })
 
 document.getElementById('replace')?.addEventListener('input', () => {
   setReplaceCommand(replace.value)(view.state, view.dispatch, view)
-  replaceButton.disabled = false
+  replaceButton.disabled = search.value? false: true
+  replaceNextButton.disabled = search.value? false: true
   console.log("SearchReplace Replace Edit")
 })
 
@@ -85,40 +89,3 @@ document.getElementById('caseSensitive')?.addEventListener('click',()=> {
   setCaseCommand(caseSensitive.checked)(view.state, view.dispatch, view)
   console.log('caseSensitive')
 })
-
-/*
-
-    let state = EditorState.create({
-      doc: DOMParser.fromSchema(dinoSchema).parse(content),
-      plugins: [
-        ...exampleSetup({ 
-          schema: sch,
-          menuContent: dinoMenu
-         }),
-        //.concat(arrowHandlers),
-        imagePlugin(sch, { ...defaultSettings }),
-        lintPlugin,
-        searchReplacePlugin2
-      ]
-    })
-  
-    let view = new EditorView(document.body, {
-    state,
-    dispatchTransaction(transaction) {
-      console.log("Document size went from", transaction.before.content.size,
-                  "to", transaction.doc.content.size)
-      let newState = view.state.apply(transaction)
-      view.updateState(newState)
-    }
-  })
-}
-)
-*/
-
-/*
-document.getElementById('search')?.addEventListener('change', () => {
-  return function(state:EditorState, dispatch: (tr: Transaction) => void){
-    if (dispatch)
-    dispatch(state.tr.scrollIntoView())
-}})
-*/

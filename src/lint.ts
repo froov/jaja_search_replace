@@ -302,7 +302,7 @@ export function setCaseCommand(csen: boolean): Command {
 
 type DispatchFn = ((tr:Transaction)=>void) | undefined
 
-export const replaceCommand : Command =  (state: EditorState, dispatch: DispatchFn) => {
+export const replaceNextCommand : Command =  (state: EditorState, dispatch: DispatchFn) => {
     const sd = pluginKey.getState(state)
     if (sd) {
       let tr = state.tr
@@ -312,11 +312,15 @@ export const replaceCommand : Command =  (state: EditorState, dispatch: Dispatch
       doc.descendants((node: Node, pos: number, parent: Node | null) => {
         if (node.isText && node.text) {
           const sr = searchfun(node.text, sd)
+          sd.matchCount = sr.length
           console.log("found", sr)
           for (let o of sr) {
             tr = tr.replaceWith(pos + o.begin+offset, pos + o.end+offset,
               state.schema.text(sd.replace))
             offset += delta
+            sd.matchIndex = offset
+            console.log(offset, delta)
+            console.log(sd)
           }
         }
       })
@@ -325,4 +329,29 @@ export const replaceCommand : Command =  (state: EditorState, dispatch: Dispatch
         dispatch(tr)      
     }
     return true
+}
+
+export const replaceCommand : Command =  (state: EditorState, dispatch: DispatchFn) => {
+  const sd = pluginKey.getState(state)
+  if (sd) {
+    let tr = state.tr
+    let doc = state.doc
+    let delta =  sd.replace.length - sd.searchPattern.length
+    let offset = 0
+    doc.descendants((node: Node, pos: number, parent: Node | null) => {
+      if (node.isText && node.text) {
+        const sr = searchfun(node.text, sd)
+        console.log("found", sr)
+        for (let o of sr) {
+          tr = tr.replaceWith(pos + o.begin+offset, pos + o.end+offset,
+            state.schema.text(sd.replace))
+          offset += delta
+        }
+      }
+    })
+
+    if (dispatch)
+      dispatch(tr)      
+  }
+  return true
 }
