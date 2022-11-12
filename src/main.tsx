@@ -67,11 +67,12 @@ let replace = document.querySelector('#replace') as HTMLInputElement;
 let replaceButton = document.querySelector('#replaceButton') as HTMLInputElement;
 document.getElementById('search')?.addEventListener('input', () => {
   setSearchCommand(search.value)(view.state, view.dispatch, view)
-  replaceButton.disabled = !search.value
+  replaceButton.disabled = !replace.value
 })
 
 document.getElementById('replace')?.addEventListener('input', () => {
   setReplaceCommand(replace.value)(view.state, view.dispatch, view)
+  replaceButton.disabled = false
   console.log("SearchReplace Replace Edit")
 })
 
