@@ -243,7 +243,7 @@ export function lintPlugin() {
 }
 
 // build a search command
-export function setSearchCommand(s: string): Command {
+export function setSearchCommand(s: string, csen?: boolean): Command {
   return (state: EditorState, dispatch) => {
     let sd = pluginKey.getState(state)
     if (!sd) {
@@ -273,6 +273,25 @@ export function setReplaceCommand(r: string): Command {
       let newSearch = {
         ...sd,
          replace: r
+      }
+      console.log(newSearch)
+      dispatch(state.tr.setMeta(pluginKey, newSearch))
+    }
+    return true
+  }
+}
+
+export function setCaseCommand(csen: boolean): Command {
+  return (state: EditorState, dispatch) => {
+    let sd = pluginKey.getState(state)
+    if (!sd) {
+      console.log("no state")
+      return false
+    }
+    if (dispatch) {
+      let newSearch = {
+        ...sd,
+         matchCase: csen
       }
       console.log(newSearch)
       dispatch(state.tr.setMeta(pluginKey, newSearch))

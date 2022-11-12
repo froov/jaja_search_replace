@@ -5,7 +5,7 @@ import './index.css'
 import "prosemirror-image-plugin/dist/styles/common.css";
 import "prosemirror-image-plugin/dist/styles/withResize.css";
 import "prosemirror-image-plugin/dist/styles/sideResize.css";
-import {lintPlugin, setSearchCommand,setReplaceCommand, replaceCommand} from './lint'
+import {lintPlugin, setSearchCommand,setReplaceCommand, replaceCommand, setCaseCommand} from './lint'
 
 import {MenuItem} from "prosemirror-menu"
 import {buildMenuItems} from "prosemirror-example-setup"
@@ -64,6 +64,7 @@ let view = new EditorView(editor, {
 
 let search = document.querySelector('#search') as HTMLInputElement;
 let replace = document.querySelector('#replace') as HTMLInputElement;
+let caseSensitive = document.querySelector('#caseSensitive') as HTMLInputElement;
 let replaceButton = document.querySelector('#replaceButton') as HTMLInputElement;
 document.getElementById('search')?.addEventListener('input', () => {
   setSearchCommand(search.value)(view.state, view.dispatch, view)
@@ -80,7 +81,8 @@ document.getElementById('replaceButton')?.addEventListener('click',()=> {
   replaceCommand(view.state, view.dispatch, view)
 })
 
-document.getElementById('case')?.addEventListener('click',()=> {
+document.getElementById('caseSensitive')?.addEventListener('click',()=> {
+  setCaseCommand(caseSensitive.checked)(view.state, view.dispatch, view)
   console.log('caseSensitive')
 })
 
