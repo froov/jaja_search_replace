@@ -343,9 +343,14 @@ export const replaceCommand : Command =  (state: EditorState, dispatch: Dispatch
         const sr = searchfun(node.text, sd)
         console.log("found", sr)
         for (let o of sr) {
+          if (sd.replace == ""){
+            tr = tr.delete(pos + o.begin+offset, pos + o.end+offset)
+            offset += delta
+          } else {
           tr = tr.replaceWith(pos + o.begin+offset, pos + o.end+offset,
             state.schema.text(sd.replace))
-          offset += delta
+          offset += delta 
+          }
         }
       }
     })
