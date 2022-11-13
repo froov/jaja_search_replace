@@ -74,6 +74,7 @@ const badWords = /\b(obviously|clearly|evidently|simply)\b/ig
 // Matches punctuation with a space before it
 const badPunc = / ([,\.!?:]) ?/g
 
+//check if there are any matches in the document. True = matches/False = no matches
 export function validSearch(doc: Node, sd: SearchData){
   let validSearchResult: boolean = false
   doc.descendants((node: Node, pos: number, parent: Node | null) => {
@@ -85,6 +86,7 @@ export function validSearch(doc: Node, sd: SearchData){
         const to = pos + o.end
         console.log(from, to)
         validSearchResult = true;
+        if (validSearchResult === true){break;}
       }
     }
   })
