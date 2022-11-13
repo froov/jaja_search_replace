@@ -75,12 +75,20 @@ const badWords = /\b(obviously|clearly|evidently|simply)\b/ig
 const badPunc = / ([,\.!?:]) ?/g
 
 export function validSearch(doc: Node, sd: SearchData){
-  if (searchValue){
-    if (searchResult) {
-      return true;
-    } else return false;
-//disable the button if search value does not exist OR no search results
-  } return false;
+  let validSearchResult: boolean = false
+  doc.descendants((node: Node, pos: number, parent: Node | null) => {
+    if (node.isText) {
+      // add search 
+      const sr = searchfun(node.text ?? "", sd)
+      for (let o of sr) {
+        const from = pos + o.begin
+        const to = pos + o.end
+        console.log(from, to)
+        validSearchResult = true;
+      }
+    }
+  })
+  return validSearchResult;
 }
 
 function lint(doc: Node, sd: SearchData) {
