@@ -37,8 +37,8 @@ export function searchfun(s: string, p: SearchData): Match[] {
   let idx = xx.indexOf(sp)
 
   while (idx !== -1) {
-    r.push(new Match(idx, idx + p.searchPattern.length));
-    idx = s.indexOf(p.searchPattern, idx + 1);
+    r.push(new Match(idx, idx + sp.length));
+    idx = xx.indexOf(sp, idx + 1);
   }
   return r
 }
@@ -74,7 +74,14 @@ const badWords = /\b(obviously|clearly|evidently|simply)\b/ig
 // Matches punctuation with a space before it
 const badPunc = / ([,\.!?:]) ?/g
 
-
+export function validSearch(doc: Node, sd: SearchData){
+  if (searchValue){
+    if (searchResult) {
+      return true;
+    } else return false;
+//disable the button if search value does not exist OR no search results
+  } return false;
+}
 
 function lint(doc: Node, sd: SearchData) {
   let result: LintResult[] = []

@@ -5,7 +5,7 @@ import './index.css'
 import "prosemirror-image-plugin/dist/styles/common.css";
 import "prosemirror-image-plugin/dist/styles/withResize.css";
 import "prosemirror-image-plugin/dist/styles/sideResize.css";
-import {lintPlugin, setSearchCommand,setReplaceCommand, replaceCommand, setCaseCommand} from './lint'
+import {lintPlugin, setSearchCommand,setReplaceCommand, replaceCommand, setCaseCommand, searchfun, pluginKey} from './lint'
 
 import {MenuItem} from "prosemirror-menu"
 import {buildMenuItems} from "prosemirror-example-setup"
@@ -71,13 +71,27 @@ let replaceNextButton = document.querySelector('#replaceNextButton') as HTMLInpu
 document.getElementById('search')?.addEventListener('input', () => {
   setSearchCommand(search.value)(view.state, view.dispatch, view)
   replaceButton.disabled = !search.value
-  replaceNextButton.disabled = !search.value
+  replaceNextButton.disabled = validSearch(search.value, searchfun(search.value,pluginKey.getState(view.state)!).length == 0)
+  console.log(replaceNextButton.disabled)
+  console.log(searchfun(search.value,pluginKey.getState(view.state)!).length)
+  console.log(searchfun(search.value,pluginKey.getState(view.state)!))
+  console.log(pluginKey.getState(view.state))
 })
+
+function validSearch(searchValue: string, searchResult: boolean){
+  if (searchValue){
+    if (searchResult) {
+      return true;
+    } else return false;
+//disable the button if search value does not exist OR no search results
+  } return false;
+}
 
 document.getElementById('replace')?.addEventListener('input', () => {
   setReplaceCommand(replace.value)(view.state, view.dispatch, view)
   replaceButton.disabled = search.value? false: true
   replaceNextButton.disabled = search.value? false: true
+  console.log(replaceNextButton.disabled)
   console.log("SearchReplace Replace Edit")
 })
 
