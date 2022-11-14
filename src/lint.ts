@@ -332,14 +332,17 @@ export const replaceNextCommand : Command =  (state: EditorState, dispatch: Disp
           sd.matchCount = sr.length
           console.log("found", sr)
           for (let o of sr) {
+            if (sd.replace == ""){
+              tr = tr.delete(pos + o.begin+offset, pos + o.end+offset)
+              offset += delta
+            } else {
             tr = tr.replaceWith(pos + o.begin+offset, pos + o.end+offset,
               state.schema.text(sd.replace))
-            offset += delta
-            sd.matchIndex = offset
-            console.log(offset, delta)
-            console.log(sd)
+            offset += delta 
+            }
+            break;
           }
-        }
+        } 
       })
 
       if (dispatch)

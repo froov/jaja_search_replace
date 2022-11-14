@@ -5,7 +5,7 @@ import './index.css'
 import "prosemirror-image-plugin/dist/styles/common.css";
 import "prosemirror-image-plugin/dist/styles/withResize.css";
 import "prosemirror-image-plugin/dist/styles/sideResize.css";
-import {lintPlugin, setSearchCommand,setReplaceCommand, replaceCommand, setCaseCommand, validSearch, pluginKey} from './lint'
+import {lintPlugin, setSearchCommand,setReplaceCommand, replaceCommand, replaceNextCommand, setCaseCommand, validSearch, pluginKey} from './lint'
 
 import {MenuItem} from "prosemirror-menu"
 import {buildMenuItems} from "prosemirror-example-setup"
@@ -76,10 +76,8 @@ document.getElementById('search')?.addEventListener('input', () => {
 
 document.getElementById('replace')?.addEventListener('input', () => {
   setReplaceCommand(replace.value)(view.state, view.dispatch, view)
-  replaceButton.disabled = search.value? false: true
-  replaceNextButton.disabled = search.value? false: true
-  console.log(replaceNextButton.disabled)
-  console.log("SearchReplace Replace Edit")
+  replaceButton.disabled = !validSearch(view.state.doc, pluginKey.getState(view.state)!)
+  replaceNextButton.disabled = !validSearch(view.state.doc, pluginKey.getState(view.state)!)
 })
 
 document.getElementById('replaceButton')?.addEventListener('click',()=> {
@@ -88,5 +86,11 @@ document.getElementById('replaceButton')?.addEventListener('click',()=> {
 
 document.getElementById('caseSensitive')?.addEventListener('click',()=> {
   setCaseCommand(caseSensitive.checked)(view.state, view.dispatch, view)
+  replaceButton.disabled = !validSearch(view.state.doc, pluginKey.getState(view.state)!)
+  replaceNextButton.disabled = !validSearch(view.state.doc, pluginKey.getState(view.state)!)
   console.log('caseSensitive')
+})
+
+document.getElementById('replaceNextButton')?.addEventListener('click',()=> {
+  replaceNextCommand(view.state, view.dispatch, view)
 })
