@@ -1,6 +1,7 @@
 import { EditorState, Transaction, Plugin, PluginKey, TextSelection, Command } from "prosemirror-state"
 import { Decoration, DecorationSet } from "prosemirror-view"
 import { Node } from "prosemirror-model"
+import { countColumn } from "@codemirror/state"
 
 // we want to treat the "search" pattern as a lint, but then mark it differently
 // in general we might want different kinds of lint, like chill blue and angry red.
@@ -105,10 +106,10 @@ function lint(doc: Node, sd: SearchData) {
       for (let o of sr) {
         const from = pos + o.begin
         const to = pos + o.end
-        const fix = ({ state, dispatch }: Dispatch) => {
-          dispatch(state.tr.replaceWith(from, to,
-            state.schema.text(sd.replace)))
-        }
+        // const fix = ({ state, dispatch }: Dispatch) => {
+        //   dispatch(state.tr.replaceWith(from, to,
+        //     state.schema.text(sd.replace)))
+        // }
         if (sd.replace == "") {
           let fix = ({ state, dispatch }: Dispatch) => {
             dispatch(state.tr.delete(from, to))
@@ -270,17 +271,23 @@ export function lintPlugin() {
 }
 
 // build a search command
-export function setSearchCommand(s: string, csen?: boolean): Command {
+export function setSearchCommand(doc: Node, s: string, csen?: boolean): Command {
   return (state: EditorState, dispatch) => {
     let sd = pluginKey.getState(state)
     if (!sd) {
       console.log("no state")
       return false
     }
+    let mc = 0
+      doc.descendants((node: Node, pos: number, parent: Node | null) => {
+        if (node.isText && node.text) {
+          const sr = searchfun(node.text, sd!)
+          mc += sr.length
+          console.log("matchCount = "+ mc)
+
+      }
+    })
     if (dispatch) {
-      let doc = state.doc
-      let allText = doc.textContent
-      let mc = searchfun(allText, sd).length
       let newSearch = {
         ...sd,
         searchPattern: s,

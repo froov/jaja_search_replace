@@ -69,7 +69,7 @@ let replaceButton = document.querySelector('#replaceButton') as HTMLInputElement
 let replaceNextButton = document.querySelector('#replaceNextButton') as HTMLInputElement;
 
 document.getElementById('search')?.addEventListener('input', () => {
-  setSearchCommand(search.value)(view.state, view.dispatch, view)
+  setSearchCommand(view.state.doc, search.value)(view.state, view.dispatch, view)
   replaceButton.disabled = !validSearch(view.state.doc, pluginKey.getState(view.state)!)
   replaceNextButton.disabled = !validSearch(view.state.doc, pluginKey.getState(view.state)!)
 })
