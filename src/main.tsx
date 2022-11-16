@@ -77,6 +77,7 @@ document.getElementById('search')?.addEventListener('input', () => {
   replaceNextButton.disabled = disableButton
   nextButton.disabled = disableButton
   lastButton.disabled = disableButton
+  document.getElementById('matchStatus')!.innerHTML = `Match ${cmd.pluginKey.getState(view.state)!.matchIndex + 1} of ${cmd.pluginKey.getState(view.state)!.matchCount}`
 })
 
 document.getElementById('replace')?.addEventListener('input', () => {
