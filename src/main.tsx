@@ -70,6 +70,7 @@ let replaceNextButton = document.querySelector('#replaceNextButton') as HTMLInpu
 let nextButton = document.querySelector('#nextButton') as HTMLInputElement;
 let lastButton = document.querySelector('#lastButton') as HTMLInputElement;
 
+
 document.getElementById('search')?.addEventListener('input', () => {
   cmd.setSearchCommand(view.state.doc, search.value)(view.state, view.dispatch, view)
   let disableButton = !cmd.validSearch(view.state.doc, cmd.pluginKey.getState(view.state)!)
@@ -100,10 +101,12 @@ document.getElementById('nextButton')?.addEventListener('click',()=> {
   cmd.selectNextCommand(view.state.doc, search.value)(view.state, view.dispatch, view)
   nextButton.disabled = cmd.endMatch(view.state.doc, cmd.pluginKey.getState(view.state)!)
   lastButton.disabled = cmd.beginMatch(view.state.doc, cmd.pluginKey.getState(view.state)!)
+  document.getElementById('matchStatus')!.innerHTML = `Match ${cmd.pluginKey.getState(view.state)!.matchIndex + 1} of ${cmd.pluginKey.getState(view.state)!.matchCount}`
 })
 
 document.getElementById('lastButton')?.addEventListener('click',()=> {
   cmd.selectLastCommand(view.state.doc, search.value)(view.state, view.dispatch, view)
   lastButton.disabled = cmd.beginMatch(view.state.doc, cmd.pluginKey.getState(view.state)!)
   nextButton.disabled = cmd.endMatch(view.state.doc, cmd.pluginKey.getState(view.state)!)
+  document.getElementById('matchStatus')!.innerHTML = `Match ${cmd.pluginKey.getState(view.state)!.matchIndex + 1} of ${cmd.pluginKey.getState(view.state)!.matchCount}`
 })
