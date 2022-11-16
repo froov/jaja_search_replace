@@ -214,7 +214,8 @@ export function lintPlugin() {
     matchIndex: 0,
     matchCount: 0,
     matchWholeWord: false,
-    findInSelection: false
+    findInSelection: false,
+    matchStartPos: 0
   }
   let r = new Plugin({
     key: pluginKey,
@@ -345,14 +346,14 @@ export const replaceNextCommand : Command =  (state: EditorState, dispatch: Disp
         const sr = searchfun(doctext, sd)
         sd.matchCount = sr.length
           for (let o of sr){
-            console.log("SR Properties")
-            console.log(pos)
-            console.log(o.begin)
-            console.log(offset)
-            console.log(delta)
-            console.log(o.end)
+            // console.log("SR Properties")
+            // console.log(pos)
+            // console.log(o.begin)
+            // console.log(offset)
+            // console.log(delta)
+            // console.log(o.end)
             if (sd.replace == ""){
-              tr = tr.setSelection(TextSelection.create(doc, pos + o.begin+offset, pos + o.end+offset))
+              tr = tr.setSelection(TextSelection.create(doc, pos + o.begin+offset, pos + o.end+offset)) //change this to selection
               sd.matchStartPos = pos + o.begin+offset
               offset += delta
             } else {
@@ -365,9 +366,7 @@ export const replaceNextCommand : Command =  (state: EditorState, dispatch: Disp
       })
 
       if (dispatch)
-        dispatch(tr
-          .setSelection(TextSelection.create(doc, sd.matchStartPos))
-          .scrollIntoView())      
+        dispatch(tr)     
     }
     return true
 }
@@ -379,23 +378,27 @@ export const replaceCommand : Command =  (state: EditorState, dispatch: Dispatch
     let doc = state.doc
     let delta =  sd.replace.length - sd.searchPattern.length
     let offset = 0
+    let count = 0
     doc.descendants((node: Node, pos: number, parent: Node | null) => {
       if (node.isText && node.text) {
         const sr = searchfun(node.text, sd)
+        count += sr.length
         console.log("found", sr)
         for (let o of sr) {
           if (sd.replace == ""){
             tr = tr.delete(pos + o.begin+offset, pos + o.end+offset)
             offset += delta
+            
           } else {
-          tr = tr.replaceWith(pos + o.begin+offset, pos + o.end+offset,
+            tr = tr.replaceWith(pos + o.begin+offset, pos + o.end+offset,
             state.schema.text(sd.replace))
-          offset += delta 
+            offset += delta 
+            
           }
         }
       }
     })
-
+console.log(count)
     if (dispatch)
       dispatch(tr)      
   }
