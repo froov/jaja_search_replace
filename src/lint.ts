@@ -282,6 +282,7 @@ export function setSearchCommand(doc: Node, s: string, csen?: boolean): Command 
       let updateSearch = {
         ...sd,
         searchPattern: s,
+        matchIndex: 0,
       }
       let mc = 0
       doc.descendants((node: Node, pos: number, parent: Node | null) => {
@@ -355,12 +356,6 @@ export const replaceNextCommand : Command =  (state: EditorState, dispatch: Disp
         const sr = searchfun(doctext, sd)
         sd.matchCount = sr.length
           for (let o of sr){
-            // console.log("SR Properties")
-            // console.log(pos)
-            // console.log(o.begin)
-            // console.log(offset)
-            // console.log(delta)
-            // console.log(o.end)
             if (sd.replace == ""){
               tr = tr.setSelection(TextSelection.create(doc, pos + o.begin+offset, pos + o.end+offset)) //change this to selection
               sd.matchStartPos = pos + o.begin+offset
@@ -391,7 +386,6 @@ export const replaceCommand : Command =  (state: EditorState, dispatch: Dispatch
     doc.descendants((node: Node, pos: number, parent: Node | null) => {
       if (node.isText && node.text) {
         const sr = searchfun(node.text, sd)
-        count += sr.length
         console.log("found", sr)
         for (let o of sr) {
           if (sd.replace == ""){
@@ -407,9 +401,47 @@ export const replaceCommand : Command =  (state: EditorState, dispatch: Dispatch
         }
       }
     })
-console.log(count)
     if (dispatch)
       dispatch(tr)      
   }
   return true
+}
+
+export function selectNextCommand(doc: Node, s: string, csen?: boolean): Command {
+  return (state: EditorState, dispatch) => {
+    let sd = pluginKey.getState(state)
+    if (!sd) {
+      console.log("no state")
+      return false
+    }
+    if (dispatch) {
+      let mi = sd!.matchIndex
+      if (mi < sd!.matchCount - 1){
+        doc.descendants((node: Node, pos: number, parent: Node | null) => {
+        if (node.isText && node.text) {
+          const sr = searchfun(node.text, sd!)
+          mi ++ 
+          console.log("matchIndex = "+ mi)
+      }
+    })
+      let newSearch = {
+        ...sd,
+        matchIndex: mi,
+      }
+      console.log(newSearch)
+    
+      dispatch(state.tr.setMeta(pluginKey, newSearch))
+    }
+  }
+    return true
+  }
+}
+
+//Disables Next button at the end of the match index 
+export function endMatch(doc: Node, sd: SearchData){
+  let endMatchResult: boolean = false
+  if (sd.matchIndex == sd.matchCount -1){
+    endMatchResult = true
+  }
+  return endMatchResult;
 }

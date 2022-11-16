@@ -5,7 +5,7 @@ import './index.css'
 import "prosemirror-image-plugin/dist/styles/common.css";
 import "prosemirror-image-plugin/dist/styles/withResize.css";
 import "prosemirror-image-plugin/dist/styles/sideResize.css";
-import {lintPlugin, setSearchCommand,setReplaceCommand, replaceCommand, replaceNextCommand, setCaseCommand, validSearch, pluginKey} from './lint'
+import {lintPlugin, setSearchCommand,setReplaceCommand, replaceCommand, replaceNextCommand, selectNextCommand, setCaseCommand, validSearch, endMatch, pluginKey} from './lint'
 
 import {MenuItem} from "prosemirror-menu"
 import {buildMenuItems} from "prosemirror-example-setup"
@@ -67,17 +67,17 @@ let replace = document.querySelector('#replace') as HTMLInputElement;
 let caseSensitive = document.querySelector('#caseSensitive') as HTMLInputElement;
 let replaceButton = document.querySelector('#replaceButton') as HTMLInputElement;
 let replaceNextButton = document.querySelector('#replaceNextButton') as HTMLInputElement;
+let nextButton = document.querySelector('#nextButton') as HTMLInputElement;
 
 document.getElementById('search')?.addEventListener('input', () => {
   setSearchCommand(view.state.doc, search.value)(view.state, view.dispatch, view)
   replaceButton.disabled = !validSearch(view.state.doc, pluginKey.getState(view.state)!)
   replaceNextButton.disabled = !validSearch(view.state.doc, pluginKey.getState(view.state)!)
+  nextButton.disabled = !validSearch(view.state.doc, pluginKey.getState(view.state)!)
 })
 
 document.getElementById('replace')?.addEventListener('input', () => {
   setReplaceCommand(replace.value)(view.state, view.dispatch, view)
-  replaceButton.disabled = !validSearch(view.state.doc, pluginKey.getState(view.state)!)
-  replaceNextButton.disabled = !validSearch(view.state.doc, pluginKey.getState(view.state)!)
 })
 
 document.getElementById('replaceButton')?.addEventListener('click',()=> {
@@ -86,12 +86,13 @@ document.getElementById('replaceButton')?.addEventListener('click',()=> {
 
 document.getElementById('caseSensitive')?.addEventListener('click',()=> {
   setCaseCommand(caseSensitive.checked)(view.state, view.dispatch, view)
-  replaceButton.disabled = !validSearch(view.state.doc, pluginKey.getState(view.state)!)
-  replaceNextButton.disabled = !validSearch(view.state.doc, pluginKey.getState(view.state)!)
-  console.log('caseSensitive')
 })
-
 
 document.getElementById('replaceNextButton')?.addEventListener('click',()=> {
   replaceNextCommand(view.state, view.dispatch, view)
+})
+
+document.getElementById('nextButton')?.addEventListener('click',()=> {
+  selectNextCommand(view.state.doc, search.value)(view.state, view.dispatch, view)
+  nextButton.disabled = endMatch(view.state.doc, pluginKey.getState(view.state)!)
 })
