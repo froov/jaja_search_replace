@@ -463,3 +463,11 @@ export function endMatch(doc: Node, sd: SearchData){
   }
   return endMatchResult;
 }
+
+export function beginMatch(doc: Node, sd: SearchData){
+  let beginMatchResult: boolean = false
+  if (sd.matchIndex == 0){
+    beginMatchResult = true
+  }
+  return beginMatchResult;
+}

@@ -55,7 +55,7 @@ let view = new EditorView(editor, {
        }),
       //.concat(arrowHandlers),
       imagePlugin(sch, { ...defaultSettings }),
-      lintPlugin(),
+      cmd.lintPlugin(),
     ]
   }),
  // nodeViews: {code_block: (node, view, getPos) => new CodeBlockView(node, view, getPos)}
@@ -98,9 +98,11 @@ document.getElementById('replaceNextButton')?.addEventListener('click',()=> {
 document.getElementById('nextButton')?.addEventListener('click',()=> {
   cmd.selectNextCommand(view.state.doc, search.value)(view.state, view.dispatch, view)
   nextButton.disabled = cmd.endMatch(view.state.doc, cmd.pluginKey.getState(view.state)!)
+  lastButton.disabled = cmd.beginMatch(view.state.doc, cmd.pluginKey.getState(view.state)!)
 })
 
 document.getElementById('lastButton')?.addEventListener('click',()=> {
   cmd.selectLastCommand(view.state.doc, search.value)(view.state, view.dispatch, view)
+  lastButton.disabled = cmd.beginMatch(view.state.doc, cmd.pluginKey.getState(view.state)!)
   nextButton.disabled = cmd.endMatch(view.state.doc, cmd.pluginKey.getState(view.state)!)
 })
