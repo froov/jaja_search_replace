@@ -91,6 +91,7 @@ document.getElementById('caseSensitive')?.addEventListener('click',()=> {
   console.log('caseSensitive')
 })
 
+
 document.getElementById('replaceNextButton')?.addEventListener('click',()=> {
   replaceNextCommand(view.state, view.dispatch, view)
 })

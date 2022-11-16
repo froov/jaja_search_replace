@@ -17,6 +17,7 @@ type SearchData = {
   matchCount: number
   matchWholeWord: boolean
   findInSelection: boolean
+  matchStartPos: number
 }
 
 export const pluginKey = new PluginKey<SearchData>('search-replace2');
@@ -84,7 +85,6 @@ export function validSearch(doc: Node, sd: SearchData){
       for (let o of sr) {
         const from = pos + o.begin
         const to = pos + o.end
-        console.log(from, to)
         validSearchResult = true;
         if (validSearchResult === true){break;}
       }
@@ -110,13 +110,21 @@ function lint(doc: Node, sd: SearchData) {
             state.schema.text(sd.replace)))
         }
         if (sd.replace == "") {
+          let fix = ({ state, dispatch }: Dispatch) => {
+            dispatch(state.tr.delete(from, to))
+            }
           result.push({
             color: 'green',
-            msg: "Word found",
+            msg: "Double click to delete " + sd.searchPattern,
             from,
-            to
+            to,
+            fix
           })
-        } else
+        } else {
+          let fix = ({ state, dispatch }: Dispatch) => {
+          dispatch(state.tr.replaceWith(from, to,
+            state.schema.text(sd.replace)))
+          }
           result.push({
             color: 'green',
             msg: "Double click to replace with " + '"' + sd.replace + '"',
@@ -124,6 +132,7 @@ function lint(doc: Node, sd: SearchData) {
             to,
             fix
           })
+        }
       }
 
 
@@ -268,9 +277,13 @@ export function setSearchCommand(s: string, csen?: boolean): Command {
       return false
     }
     if (dispatch) {
+      let doc = state.doc
+      let allText = doc.textContent
+      let mc = searchfun(allText, sd).length
       let newSearch = {
         ...sd,
-        searchPattern: s
+        searchPattern: s,
+        matchCount: mc
       }
       console.log(newSearch)
       dispatch(state.tr.setMeta(pluginKey, newSearch))
@@ -326,27 +339,35 @@ export const replaceNextCommand : Command =  (state: EditorState, dispatch: Disp
       let doc = state.doc
       let delta =  sd.replace.length - sd.searchPattern.length
       let offset = 0
+      let doctext = doc.textContent
       doc.descendants((node: Node, pos: number, parent: Node | null) => {
-        if (node.isText && node.text) {
-          const sr = searchfun(node.text, sd)
-          sd.matchCount = sr.length
-          console.log("found", sr)
-          for (let o of sr) {
+        console.log("pos ="+ pos)
+        const sr = searchfun(doctext, sd)
+        sd.matchCount = sr.length
+          for (let o of sr){
+            console.log("SR Properties")
+            console.log(pos)
+            console.log(o.begin)
+            console.log(offset)
+            console.log(delta)
+            console.log(o.end)
             if (sd.replace == ""){
-              tr = tr.delete(pos + o.begin+offset, pos + o.end+offset)
+              tr = tr.setSelection(TextSelection.create(doc, pos + o.begin+offset, pos + o.end+offset))
+              sd.matchStartPos = pos + o.begin+offset
               offset += delta
             } else {
-            tr = tr.replaceWith(pos + o.begin+offset, pos + o.end+offset,
+              sd.matchStartPos = pos + o.begin+offset
+              tr = tr.replaceWith(pos + o.begin+offset, pos + o.end+offset,
               state.schema.text(sd.replace))
-            offset += delta 
+              offset += delta 
             }
-            break;
           }
-        } 
       })
 
       if (dispatch)
-        dispatch(tr)      
+        dispatch(tr
+          .setSelection(TextSelection.create(doc, sd.matchStartPos))
+          .scrollIntoView())      
     }
     return true
 }
