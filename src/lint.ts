@@ -417,22 +417,40 @@ export function selectNextCommand(doc: Node, s: string, csen?: boolean): Command
     if (dispatch) {
       let mi = sd!.matchIndex
       if (mi < sd!.matchCount - 1){
-        doc.descendants((node: Node, pos: number, parent: Node | null) => {
-        if (node.isText && node.text) {
-          const sr = searchfun(node.text, sd!)
-          mi ++ 
-          console.log("matchIndex = "+ mi)
-      }
-    })
-      let newSearch = {
-        ...sd,
-        matchIndex: mi,
-      }
-      console.log(newSearch)
+        mi ++ 
+        let newSearch = {
+          ...sd,
+          matchIndex: mi,
+        }
+        console.log(newSearch)
     
-      dispatch(state.tr.setMeta(pluginKey, newSearch))
+        dispatch(state.tr.setMeta(pluginKey, newSearch))
+      }
     }
+    return true
   }
+}
+
+export function selectLastCommand(doc: Node, s: string, csen?: boolean): Command {
+  return (state: EditorState, dispatch) => {
+    let sd = pluginKey.getState(state)
+    if (!sd) {
+      console.log("no state")
+      return false
+    }
+    if (dispatch) {
+      let mi = sd!.matchIndex
+      if (mi > 0){
+        mi -- 
+        let newSearch = {
+          ...sd,
+          matchIndex: mi,
+        }
+        console.log(newSearch)
+    
+        dispatch(state.tr.setMeta(pluginKey, newSearch))
+      }
+    }
     return true
   }
 }

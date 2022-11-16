@@ -5,7 +5,7 @@ import './index.css'
 import "prosemirror-image-plugin/dist/styles/common.css";
 import "prosemirror-image-plugin/dist/styles/withResize.css";
 import "prosemirror-image-plugin/dist/styles/sideResize.css";
-import {lintPlugin, setSearchCommand,setReplaceCommand, replaceCommand, replaceNextCommand, selectNextCommand, setCaseCommand, validSearch, endMatch, pluginKey} from './lint'
+import * as cmd from './lint'
 
 import {MenuItem} from "prosemirror-menu"
 import {buildMenuItems} from "prosemirror-example-setup"
@@ -68,31 +68,39 @@ let caseSensitive = document.querySelector('#caseSensitive') as HTMLInputElement
 let replaceButton = document.querySelector('#replaceButton') as HTMLInputElement;
 let replaceNextButton = document.querySelector('#replaceNextButton') as HTMLInputElement;
 let nextButton = document.querySelector('#nextButton') as HTMLInputElement;
+let lastButton = document.querySelector('#lastButton') as HTMLInputElement;
 
 document.getElementById('search')?.addEventListener('input', () => {
-  setSearchCommand(view.state.doc, search.value)(view.state, view.dispatch, view)
-  replaceButton.disabled = !validSearch(view.state.doc, pluginKey.getState(view.state)!)
-  replaceNextButton.disabled = !validSearch(view.state.doc, pluginKey.getState(view.state)!)
-  nextButton.disabled = !validSearch(view.state.doc, pluginKey.getState(view.state)!)
+  cmd.setSearchCommand(view.state.doc, search.value)(view.state, view.dispatch, view)
+  let disableButton = !cmd.validSearch(view.state.doc, cmd.pluginKey.getState(view.state)!)
+  replaceButton.disabled = disableButton
+  replaceNextButton.disabled = disableButton
+  nextButton.disabled = disableButton
+  lastButton.disabled = disableButton
 })
 
 document.getElementById('replace')?.addEventListener('input', () => {
-  setReplaceCommand(replace.value)(view.state, view.dispatch, view)
+  cmd.setReplaceCommand(replace.value)(view.state, view.dispatch, view)
 })
 
 document.getElementById('replaceButton')?.addEventListener('click',()=> {
-  replaceCommand(view.state, view.dispatch, view)
+  cmd.replaceCommand(view.state, view.dispatch, view)
 })
 
 document.getElementById('caseSensitive')?.addEventListener('click',()=> {
-  setCaseCommand(caseSensitive.checked)(view.state, view.dispatch, view)
+  cmd.setCaseCommand(caseSensitive.checked)(view.state, view.dispatch, view)
 })
 
 document.getElementById('replaceNextButton')?.addEventListener('click',()=> {
-  replaceNextCommand(view.state, view.dispatch, view)
+  cmd.replaceNextCommand(view.state, view.dispatch, view)
 })
 
 document.getElementById('nextButton')?.addEventListener('click',()=> {
-  selectNextCommand(view.state.doc, search.value)(view.state, view.dispatch, view)
-  nextButton.disabled = endMatch(view.state.doc, pluginKey.getState(view.state)!)
+  cmd.selectNextCommand(view.state.doc, search.value)(view.state, view.dispatch, view)
+  nextButton.disabled = cmd.endMatch(view.state.doc, cmd.pluginKey.getState(view.state)!)
+})
+
+document.getElementById('lastButton')?.addEventListener('click',()=> {
+  cmd.selectLastCommand(view.state.doc, search.value)(view.state, view.dispatch, view)
+  nextButton.disabled = cmd.endMatch(view.state.doc, cmd.pluginKey.getState(view.state)!)
 })
