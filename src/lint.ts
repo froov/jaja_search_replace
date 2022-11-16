@@ -278,20 +278,22 @@ export function setSearchCommand(doc: Node, s: string, csen?: boolean): Command 
       console.log("no state")
       return false
     }
-    let mc = 0
-      doc.descendants((node: Node, pos: number, parent: Node | null) => {
-        if (node.isText && node.text) {
-          const sr = searchfun(node.text, sd!)
-          mc += sr.length
-          console.log("matchCount = "+ mc)
-
-      }
-    })
     if (dispatch) {
-      let newSearch = {
+      let updateSearch = {
         ...sd,
         searchPattern: s,
-        matchCount: mc
+      }
+      let mc = 0
+      doc.descendants((node: Node, pos: number, parent: Node | null) => {
+        if (node.isText && node.text) {
+          const sr = searchfun(node.text, updateSearch)
+          mc += sr.length
+          console.log("matchCount = "+ mc)
+      }
+    })
+      let newSearch = {
+        ...updateSearch,
+        matchCount: mc,
       }
       console.log(newSearch)
       dispatch(state.tr.setMeta(pluginKey, newSearch))
